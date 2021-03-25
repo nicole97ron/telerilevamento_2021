@@ -21,3 +21,39 @@ plot(p224r63_2011, col=cl)
 #utilizzo la stessa formula di prima ma cambio i colori
 cl <- colorRampPalette(c("blue","red","pink")) (100)
 plot(p224r63_2011, col=cl)
+# Bande Landsat
+# B1: blu
+# B2: verde
+# B3: rosso
+# B4: infrarosso vicino 
+# B5: infrarosso medio
+# B6: infrarosso termico
+# B7: infrarosso medio 
+# la funzione "dev.off" ripulisce la finestra grafica
+dev.off() 
+#la banda del blu è B1_sre 
+plot(p224r63_2011$B1_sre)
+#con $ leghiamo la banda 1 all'immagine completa
+#esercizio: plottare la banda 1 con una scala di colori a libera scelta
+plot(p224r63_2011$B1_sre, col=cl)
+#ripulisco la finestra grafica
+dev.off()
+#la funzione "par" serve per settare i parametri grafici
+par(mfrow= c(1,2)) #se inserisco prima il numero di colonne par(mfcol...)
+plot(p224r63_2011$B1_sre)
+plot(p224r63_2011$B2_sre)
+#mf= multiframe
+#c= (1,2) vettore composto da una riga e due colonne
+#esercizio: plottare le prime 4 bande di Landsap
+par(mfrow=c(4, 1))
+plot(p224r63_2011$B1_sre)
+plot(p224r63_2011$B2_sre)
+plot(p224r63_2011$B3_sre)
+plot(p224r63_2011$B4_sre)
+# a quadrat of bands...:
+par(mfrow=c(2,2))
+plot(p224r63_2011$B1_sre)
+plot(p224r63_2011$B2_sre)
+plot(p224r63_2011$B3_sre)
+plot(p224r63_2011$B4_sre)
+
