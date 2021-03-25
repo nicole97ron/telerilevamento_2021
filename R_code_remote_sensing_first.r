@@ -56,4 +56,17 @@ plot(p224r63_2011$B1_sre)
 plot(p224r63_2011$B2_sre)
 plot(p224r63_2011$B3_sre)
 plot(p224r63_2011$B4_sre)
-
+# esercizio: plottiamo le prime 4 bande in un quadrato 2x2, per ogni banda assegniamo una colorRampPalette associata al sensore della banda
+par(mfrow=c(2,2)) 
+# B1(blu): colorRampPalette blue
+clb <- colorRampPalette(c("dark blue","blue","light blue")) (100)
+plot(p224r63_2011$B1_sre, col=clb)
+# B2(verde): colorRampPalette green
+clg <- colorRampPalette(c("dark green","green","light green")) (100)
+plot(p224r63_2011$B2_sre, col=clg)
+# B3(rosso): colorRampPalette red
+clr <- colorRampPalette(c("dark red","red","pink")) (100)
+plot(p224r63_2011$B3_sre, col=clr)
+# B4(infrarosso vicino): colorRampPalette basata sui gialli
+clnir <- colorRampPalette(c("red","orange","yellow")) (100)
+plot(p224r63_2011$B4_sre, col=clnir)
