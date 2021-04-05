@@ -115,3 +115,52 @@ plotRGB(p224r63_2011, r=3, g=4, b=2, stretch="hist")
 # Installare un nuovo pacchetto 
 install.packages("RStoolbox")
 library(RStoolbox)
+
+# MULTITEMPORAL SET
+# facciamo un confronto temporale tra l'immagine del 2011 e l'immagine del 1988 che rappresentano la stessa zona 
+# vogliamo utilizzare l'immagine del 1988 per cui dobbiamo richiamare la library raster ed il percorso della cartella lab in cui è contenuta l'immagine
+library(raster)
+setwd("C:/lab/") 
+
+# funzione brick: importa l'intero set di bande creando un oggetto che si chiama raster brick
+# importiamo in R il file: immagine del 2011
+p224r63_2011 <- brick("p224r63_2011_masked.grd")
+# richiamiamo l'oggeto della funzione per vedere le informazioni del file
+p224r63_2011
+# importiamo in R il file: immagine del 1988
+p224r63_1988 <- brick("p224r63_1988_masked.grd")
+# richiamiamo l'oggeto della funzione per vedere le informazioni del file
+p224r63_1988
+
+# Con la funzione plot visualizziamo le singole bande con la scala di colori di default
+plot(p224r63_1988)
+
+# SCHEMA RGB 
+# Con questa funzione visualizziamo l'immagine a colori naturali quindi associamo ad ogni componenete la banda corrispondente (3,2,1: banda rossa sulla componente R, banda verde sulla componente G, banda blu sulla componente B)
+plotRGB(p224r63_1988,  r=3, g=2, b=1, stretch="Lin")
+# Ora associamo alle stesse componenti bande differenti (4,3,2: banda infraorosso sulla componente R, banda rossa sulla componente G, banda verde sulla componente B)
+plotRGB(p224r63_1988,  r=4, g=3, b=2, stretch="Lin") # vegetazione tutta rossa, situazione antropica meno prevalente
+
+# ESERCIZIO: creare un multiframe per confrontare le due immagine (2 righe e 1 colonna) 
+par(mfrow=c(2,1)) 
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_1988,  r=4, g=3, b=2, stretch="Lin")
+
+# ESERCIZIO: creare un multiframe 2x2 con prima riga: stretch lin; seconda riga: histogram stretch 
+par(mfrow=c(2,2)) 
+# Lin
+plotRGB(p224r63_1988,  r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+# hist
+plotRGB(p224r63_1988,  r=4, g=3, b=2, stretch="hist")
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="hist")
+
+# PDF nella cartella lab
+pdf("multitemp.pdf")
+par(mfrow=c(2,2))
+plotRGB(p224r63_1988,  r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_1988,  r=4, g=3, b=2, stretch="hist")
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="hist")
+dev.off()
+
