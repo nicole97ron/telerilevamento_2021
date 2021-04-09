@@ -38,5 +38,47 @@ import <- lapply(rlist,raster)
 import
 # la funzione "stack" crea un gruppo di file raster defintio "rasterstack"
 TGr <- stack(import)
+TGr
 plot(TGr)
-plotRGB(TGr, 1, 2, 3, stretch="Lin")
+
+# installare il pacchetto rasterVis
+install.packages("rasterVis")
+library(rasterVis)
+
+# La funzione "levelplot" permette di creare un plot unico 
+levelplot(TGr)
+levelplot(TGr$lst_2000)
+# con questa funzione si ottiene un grafico che definisce la variazione della temperatura nell'area di riferimento
+# ora è possibile provare a modificare la colorRampPallete 
+cl <- colorRampPalette(c("blue","light blue","pink","red"))(100)
+levelplot(TGr, col.regions=cl)
+# dal grafico ottenuto si nota un trend di cambiamneto di temperatura dal 2000 al 2015
+levelplot(TGr,col.regions=cl, names.attr=c("July 2000","July 2005", "July 2010", "July 2015"))
+# in questo modo rinominiamo i vari layer contenuti nell'immagine
+# ora possiamo inserire un titolo al nostro grafico (essendo un testo deve essere inserito tra virgolette)
+levelplot(TGr,col.regions=cl, main="LST variation in time",names.attr=c("July 2000","July 2005", "July 2010", "July 2015"))
+
+# Ora utilizziamo i dati contenuti in MELT 
+# creiamo un'altra lista tramite la presenza di un pattern comune
+# in questo caso il pattern comune è "melt"
+meltlist <- list.files(pattern="melt")
+meltlist
+# ora utilizzo la funzione lapply con la funzione raster applicata alla lista appena creata 
+melt_import <- lapply(meltlist,raster)
+# a questo punto utilizzo la funzione "stack"
+melt <- stack(melt_import)
+# faccio uno stack di tutti i file che ho importato 
+melt
+# ora utilizziamo la funzione levelplot con questi nuovi dati 
+levelplot(melt)
+# il grafico che otteniamo ci descrive il livello di scioglimeno dei ghiacciai dal 1979 al 2007
+# ora utilizziamo una funzione che permette di fare una sottrazzione tra uno strato e un altro
+melt_amount <- melt$X2007annual_melt - melt$X1979annual_melt
+# ora plottiamo e modifichiamo la colorRampPalette 
+clb <- colorRampPalette(c("blue","white","red"))(100)
+plot(melt_amount, col=clb)
+# le zone rosse che otteniamo nel grafico sono quelle dove dal 2007 al 1979 c'è stato uno scioglimento del ghiaccio maggiore 
+# possiamo fare anche un levelplot 
+levelplot(melt_amount, col.regions=clb)
+ # in questo modo si riescono ad utilizzare un set di dati multitemporali potendoli visualizzare inisieme e notando così le differenze
+
