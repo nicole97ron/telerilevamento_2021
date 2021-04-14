@@ -82,3 +82,7 @@ plot(melt_amount, col=clb)
 levelplot(melt_amount, col.regions=clb)
  # in questo modo si riescono ad utilizzare un set di dati multitemporali potendoli visualizzare inisieme e notando così le differenze
 
+# installare il pacchetto knitr che serve per fare un report
+install.packages("knitr") 
+library(knitr) 
+
