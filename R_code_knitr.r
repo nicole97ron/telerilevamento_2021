@@ -10,5 +10,5 @@ library(knitr)
 #salviamo il codice da utilizzare nella cartella lab
 #il pacchetto knitr pesca il codice nella cartella lab e lo carica in R generando il report 
 #utilizziamo la funzione stitch
-stitch("R_code_greenland.r.txt", template=system.file("misc", "knitr-template.Rnw", package="knitr"))
-#
+stitch("R_code_greenland.txt", template=system.file("misc", "knitr-template.Rnw", package="knitr"))
+
