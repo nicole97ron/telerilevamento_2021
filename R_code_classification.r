@@ -37,3 +37,24 @@ plot(son$map)
 sun <- brick("sun.png")
 sunc <- unsuperClass(sun, nClasses=3)
 plot(sunc$map)
+
+# Grand Canyon 
+# richiamiamo le library
+library(raster)
+library(RStoolbox)
+# settiamo la working directory
+setwd("C:/lab/")
+gc <- brick("dolansprings_oli_2013088_canyon_lrg.jpg")
+#visualizziamo l'immagine con la funzione plotRGB
+plotRGB(gc, r=1, g=2, b=3, stretch="lin")
+# modifichiamo lo stretch
+plotRGB(gc, r=1, g=2, b=3, stretch="hist")
+# ora procediamo con la classificazione dell'immagine tramite la funzione unsuperclass
+gcc2 <- unsuperClass(gc, nClasses=2)
+gcc2 
+# in questo modo otteniamo informazioni sulla mappa
+# ora visualizziamo l'immagine classificata in due classi
+plot(gcc2$map)
+# ora classifichiamo l'immagine con 4 classi
+gcc4 <- unsuperClass(gc, nClasses=4)
+plot(gcc4$map)
