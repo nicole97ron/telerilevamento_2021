@@ -1,6 +1,9 @@
 # R_code_vegetation-indices
 # carichiamo le librerie
 library(raster)
+library(RStoolbox) # for vegetation indices calculation
+library(rasterdiv) # for the worldwide NDVI
+library(rasterVis)
 # settiamo la working directory
 setwd("C:/lab/")
 # carichiamo le immagini utilizzando la funzione brick
@@ -57,7 +60,7 @@ plot(ndvi1, col=cl)
 ndvi2 <- (defor2$defor2.1 - defor2$defor2.2) / (defor2$defor2.1 + defor2$defor2.2)
 plot(ndvi2, col=cl)
 
-library(RStoolbox) # for vegetation indices calculation
+# for vegetation indices calculation
 # spectral indices
 # con questa funzioni si calcolano tutti gli indice e vengono inseriti tutti in un'unica immagine
 vi1 <- spectralIndices(defor1, green = 3, red = 2, nir = 1)
@@ -65,4 +68,14 @@ plot(vi1, col=cl)
 # facciamo lo stesso per la seconda immagine
 vi2 <- spectralIndices(defor2, green = 3, red = 2, nir = 1)
 plot(vi2, col=cl)
+
+# for the worldwide NDVI
+plot(copNDVI)
+# otteniamo una mappa del NDVI a livello globale
+copNDVI <- reclassify(copNDVI, cbind(253:255, NA))
+# questa funzione permette di modificare dei valori, in questo caso eliminiamo la parte dell'immagine relativa all'acqua
+plot(copNDVI)
+
+#rasterVis package needed
+levelplot(copNDVI)
 
