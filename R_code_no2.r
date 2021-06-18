@@ -40,4 +40,11 @@ plot(EN$EN_0001, col=cls)
 plot(EN$EN_0013, col=cls)
  
 # 9. facciamo una PCA sulle 13 immagini
+ENpca <- rasterPCA(EN)
+summary(ENpca$model)
+plot(ENpca$map, r=1, g=2, b=3, stretch="lin")
+
+#10. Compute the local variability( local standard deviatipon) of the first principal component 
+PC1sd <- focal(ENpca$map$PC1, w=matrix(1/9, nrow=3, ncol=3), fun=sd)
+plot(PC1sd, col=cls)
 
