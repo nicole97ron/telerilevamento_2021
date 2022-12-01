@@ -1,4 +1,5 @@
-# R_code_classification
+# R_code_classificazione.r 
+# CLASSIFICAZIONE: processo che accorpa pixel con valori simili, una volta che questi pixel sono stati accorpati rappresentano una classe
 
 # settiamo la working directory 
 setwd("C:/lab/")
@@ -9,6 +10,7 @@ library(raster)
 # questa è la libreria che ci serve per importare il dato
 so <- brick("Solar_Orbiter_s_first_views_of_the_Sun_pillars.jpg")
 # con la freccia associamo la funzione ad un nome
+
 so
 # con questa funzione otteniamo tutti i parametri
 # visualizziamo i tre livelli con la funzione plot
