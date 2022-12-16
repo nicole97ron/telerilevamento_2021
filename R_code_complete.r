@@ -1,184 +1,278 @@
-# Codice R completo - Telerilevamento Geo-Ecologico
+# R Code Complete - Telerilevamento Geo-Ecologico 2020-2021
 
-# ------------------------------------------------
+# Summary:
+# 1.  R code remote sensing first code 
+# 2.  R code time series Greenland
+# 3.  R code Copernicus data
+# 4.  R code knitr 
+# 5.  R code classification
+# 6.  R code multivariate analysis
+# 7.  R code vegetation indices
+# 8.  R code land cover and ggplot
+# 9.  R code variability 
+# 10. R code spectral signatures
+# 11. R code NO2
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Sommario:
+# 1. R code remote sensing first code 
 
-# 1. Primo codice telerilevamento
-# 2. Serie temporali del codice R
-# 3. Dati Copernico codice R
-# 4. Codice R knitr
-# 5. Analisi multivariata del codice R
-# 6. Classificazione del codice R
-# 7. Codice R ggplot2
-# 8. Indici di vegetazione del codice R
-# 9. Copertura del suolo del codice R
-# 10. Variabilità del codice R
-# 11. Firme spettrali del codice R
-
-
-# ------------------------------------------------
-
-# 1. Primo codice telerilevamento
-
-# Il mio primo codice in R per il telerilevamento!!!
 # Il mio primo codice in R per il telerilevamento!
 
-# install.packages("raster")
-libreria ( raster )
+# funzione install.packages: funzione che installa un pacchetto situato all'esterno del software R 
+# install.packages("raster"): serve per INSTALLARE il pacchetto raster che gestisce i dati in formato raster (immagini)
+# il pacchetto raster si scrive tra "" perchè si trova all'esterno del software R ed è l'argomento della funzione
+install.packages("raster") 
 
-setwd( " ~/lab/ " ) # Linux
-# setwd("C:/lab/") # Windows
-# setwd("/Utenti/nome/Desktop/lab/") # Mac
+# funzione library: serve per UTILIZZARE un pacchetto 
+# funzione library(raster): utilizziamo il pacchetto raster, non mettiamo le "" perchè il pacchetto è già dentro R
+library(raster) 
 
-p224r63_2011  <- mattone( " p224r63_2011_masked.grd " )
+# funzione setwd: serve per settare la working directory (cartella lab) 
+# percorso Windows per GESTIRE i dati contenuti nella cartella lab
+# usare "" perchè la cartella lab si trova fuori da R
+setwd("C:/lab/") 
+
+# funzione brick: serve per IMPORTARE dentro a R l'intera immagine satellitare costituita da tutte le sue singole bande (intero set di bande)
+# la funzione crea un oggetto che si chiama rasterbrick: serie di bande in formato raster in un'unica immagine satellitare 
+# l'immagine satellitare va scritta tra "" perchè si trova all'esterno di R
+# assegnare il risultato della funzione brick ad un oggetto chiamato con il nome dell'immagine
+p224r63_2011 <- brick("p224r63_2011_masked.grd")
+# scriviamo il nome dell'immagine per conoscere le INFORMAZIONI relative al file raster
+p224r63_2011
+# class      : RasterBrick  -> sono 7 bande in formato raster
+# dimensions : 1499, 2967, 4447533, 7  (nrow, ncol, ncell, nlayers)  -> 4 milioni di pixel per ogni singola banda (sono 7 bande) 
+# resolution : 30, 30  (x, y)
+# extent     : 579765, 668775, -522705, -477735  (xmin, xmax, ymin, ymax)
+# crs        : +proj=utm +zone=22 +datum=WGS84 +units=m +no_defs 
+# source     : C:/lab/p224r63_2011_masked.grd 
+# names      :       B1_sre,       B2_sre,       B3_sre,       B4_sre,       B5_sre,        B6_bt,       B7_sre 
+# min values : 0.000000e+00, 0.000000e+00, 0.000000e+00, 1.196277e-02, 4.116526e-03, 2.951000e+02, 0.000000e+00 
+# max values :    0.1249041,    0.2563655,    0.2591587,    0.5592193,    0.4894984,  305.2000000,    0.3692634 
+
+# Bande di Landsat:
+# B1_sre: blu
+# B2_sre: verde
+# B3_sre: rosso 
+# B4_sre: infrarosso vicino 
+# B5_sre: infrarosso medio
+# B6_sre: infrarosso termico 
+# B7_sre: infrarosso medio 
+
+# funzione plot: serve per VISUALIZZARE i dati, in questo caso visualizziamo tutte le 7 bande dell'intera immagine satellitare
+plot(p224r63_2011)
+# ci mostra tutte le 7 bande 
+# focus banda dell'infrarosso vicino: puntini verdi sono le piante perchè riflettono molto nell'infrarosso vicino dunque hanno valori di riflettanza alti (0,5 nella legenda) 
+
+
+# colorRampPalette
+# vogliamo cambiare la scala di colori di default (di base) che viene applicata dal software
+# colore scuro -> pixel che assorbono molto (valori bassi di riflettanza); colore chiaro -> pixel che rilfettono molto (valori alti di riflettanza) 
+# funzione colorRampPalette per CAMBIARE il COLORE delle 7 bande, ogni colore è un etichetta scritta tra ""
+# colorRampPalette("black","grey","white") 
+# i colori sono diversi caratteri di uno stesso argomento (colore) quindi vengono racchiusi all'interno di un VETTORE chiamato c("","","",...)  
+# colorRampPalette(c("black","grey","white")) 
+# 100: sono i livelli per ciascun colore, sono fuori dalla funzione perchè sono un altro argomento 
+# assegnare l'oggetto (cl) al risultato della funzione 
+cl <- colorRampPalette(c("black","grey","light grey")) (100)
+# funzione plot: visualizziamo l'immagine con la nuova palette di colori
+# primo argomento: immagine , secondo argomento: colore
+# argomento del colore è col e deve essere uguale all'oggetto della funzione (cl) 
+plot(p224r63_2011, col=cl)
+# di nuovo vediamo che nella banda dell'infrarosso vicino ci sono valori alti di riflettanza (è una mappa molto chiara) 
+
+# ESERCIZIO: creiamo una nuova palette di colori scelta da noi e visualizziamo 
+clb <- colorRampPalette(c("blue","pink","light pink","purple","green")) (100)
+plot(p224r63_2011, col=clb)
+
+# funzione dev off per RIPULIRE la finestra grafica (nel caso non si fosse chiusa manualmente) 
+dev.off()
+
+# funzione plot: visualizziamo l'immagine intera legata alla sua banda 1 
+# banda 1 si chiama B1_sre
+# simbolo $: LEGA i due blocchi, quindi lega l'intera immagine alla sua banda 1 
+plot(p224r63_2011$B1_sre)
+
+# ESERCIZIO: visualizzare solo la banda 1 con una scala di colori scelta da noi
+cls <- colorRampPalette(c("blue","light blue","magenta","light pink","white")) (100)
+# funzione(primo argomento:nome_immagine$banda1, secondo argomento:colore(col)=oggetto(cls))
+plot(p224r63_2011$B1_sre, col=cls)
+
+
+
+# par
+# vogliamo visualizzare solo le bande che ci interessano (non tutte e nemmeno una singola)
+# vogliamo vedere l'immagine della banda del blu accanto all'immagine della banda del verde
+# funzione par: crea un GRAFICO e serve per fare il settaggio dei vari parametri grafici 
+# stiamo facendo un multiframe -> mf e vogliamo un grafico con 1 riga e 2 colonne
+# mfrow = n.righe, n.colonne oppure mfcol = n.colonne, n.righe
+# par(mfrow=1,2)
+# 1,2 sono due caratteri dello stesso argomento (n.righe,n.colonne) dunque li inseriamo in un VETTORE c
+par(mfrow=c(1,2))
+# plottiamo le due bande (blu - verde) legate ($) all'immagine intera 
+plot(p224r63_2011$B1_sre)
+plot(p224r63_2011$B2_sre)
+
+# ESERICIZIO: plottiamo le due bande (blue - verde) su 2 righe e 1 colonna
+par(mfrow=c(2,1))
+plot(p224r63_2011$B1_sre)
+plot(p224r63_2011$B2_sre)
+# plottiamo le prime 4 bande di Landsat su 4 righe e 1 colonna
+par(mfrow=c(4,1))
+plot(p224r63_2011$B1_sre)
+plot(p224r63_2011$B2_sre)
+plot(p224r63_2011$B3_sre)
+plot(p224r63_2011$B4_sre)
+# plottiamo le prime 4 bande di Landsat in un quadrato 2x2
+par(mfrow=c(2,2)) 
+plot(p224r63_2011$B1_sre)
+plot(p224r63_2011$B2_sre)
+plot(p224r63_2011$B3_sre)
+plot(p224r63_2011$B4_sre)
+
+# ESERCIZIO: plottiamo le prime 4 bande di Landsat in un quadrato 2x2
+# per ogni banda assegniamo una colorRampPalette che faccia riferimento ai sensori di quella banda
+# 1- funzione par mforw=2righe,2colonne
+# per ogni immagine: 
+# 2- oggetto <- funzione colorRampPalette
+# 3- funzione plot (nome_immagine$bandax, col=oggetto)
+par(mfrow=c(2,2)) 
+
+# B1(blu): colorRampPalette blue
+clb <- colorRampPalette(c("dark blue","blue","light blue")) (100)
+plot(p224r63_2011$B1_sre, col=clb)
+
+# B2(verde): colorRampPalette green
+clg <- colorRampPalette(c("dark green","green","light green")) (100)
+plot(p224r63_2011$B2_sre, col=clg)
+
+# B3(rosso): colorRampPalette red
+clr <- colorRampPalette(c("dark red","red","pink")) (100)
+plot(p224r63_2011$B3_sre, col=clr)
+
+# B4(infrarosso vicino): colorRampPalette sfumature gialle
+clnir <- colorRampPalette(c("red","orange","yellow")) (100)
+plot(p224r63_2011$B4_sre, col=clnir)
+
+
+
+# plotRGB
+# visualizziamo i dati utilizzando lo schema RGB
+# SCHEMA RGB: red,green,blue: per ogni componente dello schema RGB utilizziamo una banda 
+# possiamo utilizzare solo 3 bande per volta per visualizzare l'immagine intera 
+# componente rossa R3 -> banda 3 (banda del rosso)
+# componente verde G2 -> banda 2 (banda del verde)
+# componente blu B1 -> banda 1 (banda del blu)
+
+# visualizzare tutta l'immagine a colori naturali
+# funzione plotRGB: VISUALIZZAZIONE, attraverso lo schema RGB, di un oggetto raster multi-layered (molte bande)
+# primo argomento: nome_immagine
+# secondo argomento: associazione tra la componenete dello schema RGB e la banda: r=3, g=2, b=1
+# terzo argomento: stretch="Lin"
+# stretch lineare: prende i valori di riflettanza e li fa variare tra 0 e 1 
+                   # serve per mostrare tutte le gradazioni di colore ed evitare uno schiacciamento verso una sola parte del colore
+plotRGB(p224r63_2011,  r=3, g=2, b=1, stretch="Lin")
+
+# visualizzare tutta l'immagine a falsi colori
+# banda 4 (infrarosso vicino) sulla componente red, banda 3 (rosso) sulla componente green, banda 2 (verde) sulla componente blue
+# vegetazione tutta rossa perchè riflette molto nell'infrarosso vicino (banda 4) 
+plotRGB(p224r63_2011,  r=4, g=3, b=2, stretch="Lin") 
+# banda 3 (rosso) sulla componente rossa, banda 4 (infrarosso vicino) sulla componente verde, banda 2 (verde) sulla componente blu
+# vegetazione tutta verde e suolo nudo (componente agricola) viola
+plotRGB(p224r63_2011,  r=3, g=4, b=2, stretch="Lin")  
+# banda 3 (rossa) sulla componente rossa, banda 2 (verde) sulla componente verde, banda 4 (infrarosso vicino) sulla componente blu
+# vegetazione tutta blu e suolo nudo (componente agricola) giallo
+plotRGB(p224r63_2011,  r=3, g=2, b=4, stretch="Lin") 
+
+#ESERCIZIO: facciamo un multiframe delle 4 immagini appena create e le mettiamo in un quadrato 2x2
+par(mfrow=c(2,2)) 
+plotRGB(p224r63_2011, r=3, g=2, b=1, stretch="Lin")
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_2011, r=3, g=4, b=2, stretch="Lin")
+plotRGB(p224r63_2011, r=3, g=2, b=4, stretch="Lin")
+
+# funzione pdf: SALVIAMO le 4 immagini appena create come pdf nella cartella lab
+# l'argomento è il nome del file tra "" e senza spazi
+pdf("immagine_multiframe_2x2")
+par(mfrow=c(2,2)) 
+plotRGB(p224r63_2011, r=3, g=2, b=1, stretch="Lin")
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_2011, r=3, g=4, b=2, stretch="Lin")
+plotRGB(p224r63_2011, r=3, g=2, b=4, stretch="Lin")
+dev.off()
+
+# histogram stretch: non è lineare ma tira i valori intermedi di riflettanza al centro grazie ad una pendenza molto accentuata della curva
+# immagine a colori falsi -> banda 4 (infrarosso vicino) sulla componente verde 
+# confronto tra stretch lineare e histogram stretch
+plotRGB(p224r63_2011, r=3, g=4, b=2, stretch="Lin")
+plotRGB(p224r63_2011, r=3, g=4, b=2, stretch="hist")
+# l'immagine con l'histogram stretch ha particolari in più, nella foresta distinguiamo le zone di vegetazione più umide (in viola) ed il movimento dell'acqua
+
+# ESERCIZIO: facciamo un par mfrow = 3righe, 1 colonna
+# immagine a colori naturali (3,2,1) - immagine a colori falsi (infrarosso vicino sul green) - immagine a colori falsi con histogram stretch (infrarosso vicino sul green)
+par(mfrow=c(3,1))
+plotRGB(p224r63_2011, r=3, g=2, b=1, stretch="Lin")
+plotRGB(p224r63_2011, r=3, g=4, b=2, stretch="Lin")
+plotRGB(p224r63_2011, r=3, g=4, b=2, stretch="hist")
+
+
+
+# MULTITEMPORAL SET
+# facciamo un confronto temporale tra l'immagine del 2011 e l'immagine del 1988 che rappresentano la stessa zona (stesse path e raw)
+# dobbiamo utilizzare l'immagine del 1988: 1- richiamare il pacchetto raster 2- settare la working directory: cartella che utiliziamo per caricare i dati
+library(raster)
+set("C:/lab/") 
+
+# importiamo in R il file corrispondente all'immagine del 2011
+# funzione brick: IMPORTA l'intera immagine satellitare, dunque importa tutte le singole bande all'interno di un unica immagine saltellitare
+# assegnamo il rislutato della funzione brick ad un oggetto che chiamiamo come il nome dell'immagine
+p224r63_2011 <- brick("p224r63_2011_masked.grd")
+# richiamiamo l'immagine (oggetto della funzione brick) per vedere le informazioni del file
 p224r63_2011
 
-trama ( p224r63_2011 )
-
-# cambio colore
-cl  <- colorRampPalette(c( " nero " , " grigio " , " grigio chiaro " )) ( 100 )
-plot( p224r63_2011 , col = cl )
-
-# ### GIORNO 2
-
-# cambio colore -> nuovo
-cl  <- colorRampPalette(c( " blu " , " verde " , " grigio " , " rosso " , " magenta " , " giallo " )) ( 100 )
-plot( p224r63_2011 , col = cl )
-
-cls  <- colorRampPalette(c( " rosso " , " rosa " , " arancione " , " viola " )) ( 200 )
-plot( p224r63_2011 , col = cls )                       
-
-# ### GIORNO 3
-# Bande Landsat
-# B1: blu
-# B2: verde
-# B3: rosso
-# B4: infrarosso vicino
-# B5: infrarosso medio
-# B6: infrarosso termico
-# B7: infrarosso medio
-
-# dev.off pulirà il grafico corrente
-dev.off()
-
-trama ( p224r63_2011 $ B1_sre )
-
-cls  <- colorRampPalette(c( " rosso " , " rosa " , " arancione " , " viola " )) ( 200 )
-plot( p224r63_2011 $ B1_sre , col = cls )
-
-dev.off()
-
-
-trama ( p224r63_2011 $ B1_sre )
-trama ( p224r63_2011 $ B2_sre )
-
-# 1 riga, 2 colonne
-par( mfrow = c( 1 , 2 ))
-trama ( p224r63_2011 $ B1_sre )
-trama ( p224r63_2011 $ B2_sre )
-
-# 2 righe, 1 colonne
-par( mfrow = c( 2 , 1 )) # se si utilizzano prima le colonne: par(mfcol....)
-trama ( p224r63_2011 $ B1_sre )
-trama ( p224r63_2011 $ B2_sre )
-
-# traccia le prime quattro bande di Landsat
-par( mfrow = c( 4 , 1 ))
-trama ( p224r63_2011 $ B1_sre )
-trama ( p224r63_2011 $ B2_sre )
-trama ( p224r63_2011 $ B3_sre )
-trama ( p224r63_2011 $ B4_sre )
-
-# un quadrato di bande...:
-par( mfrow = c( 2 , 2 ))
-trama ( p224r63_2011 $ B1_sre )
-trama ( p224r63_2011 $ B2_sre )
-trama ( p224r63_2011 $ B3_sre )
-trama ( p224r63_2011 $ B4_sre )
-
-# un quadrato di bande...:
-par( mfrow = c( 2 , 2 ))
-
-clb  <- colorRampPalette(c( " blu scuro " , " blu " , " azzurro " )) ( 100 )
-plot( p224r63_2011 $ B1_sre , col = clb )
-
-clg  <- colorRampPalette(c( " verde scuro " , " verde " , " verde chiaro " )) ( 100 )
-plot( p224r63_2011 $ B2_sre , col = clg )
-
-clr  <- colorRampPalette(c( " rosso scuro " , " rosso " , " rosa " )) ( 100 )
-plot( p224r63_2011 $ B3_sre , col = clr )
-
-clnir  <- colorRampPalette(c( " rosso " , " arancione " , " giallo " )) ( 100 )
-plot( p224r63_2011 $ B4_sre , col = clnir )
-
-# Visualizzazione dei dati tramite plottaggio RGB
-
-
-# Bande Landsat
-# B1: blu
-# B2: verde
-# B3: rosso
-# B4: infrarosso vicino
-# B5: infrarosso medio
-# B6: infrarosso termico
-# B7: infrarosso medio
-
-plotRGB( p224r63_2011 , r = 3 , g = 2 , b = 1 , tratto = " Lin " )
-plotRGB( p224r63_2011 , r = 4 , g = 3 , b = 2 , tratto = " Lin " )
-plotRGB( p224r63_2011 , r = 3 , g = 4 , b = 2 , stretch = " Lin " )
-plotRGB( p224r63_2011 , r = 3 , g = 2 , b = 4 , tratto = " Lin " )
-
-# Esercizio: montare un multiframe 2x2
-par( mfrow = c( 2 , 2 ))
-plotRGB( p224r63_2011 , r = 3 , g = 2 , b = 1 , tratto = " Lin " )
-plotRGB( p224r63_2011 , r = 4 , g = 3 , b = 2 , tratto = " Lin " )
-plotRGB( p224r63_2011 , r = 3 , g = 4 , b = 2 , stretch = " Lin " )
-plotRGB( p224r63_2011 , r = 3 , g = 2 , b = 4 , tratto = " Lin " )
-
-pdf( " il_mio_primo_pdf_con_R.pdf " )
-par( mfrow = c( 2 , 2 ))
-plotRGB( p224r63_2011 , r = 3 , g = 2 , b = 1 , tratto = " Lin " )
-plotRGB( p224r63_2011 , r = 4 , g = 3 , b = 2 , tratto = " Lin " )
-plotRGB( p224r63_2011 , r = 3 , g = 4 , b = 2 , stretch = " Lin " )
-plotRGB( p224r63_2011 , r = 3 , g = 2 , b = 4 , tratto = " Lin " )
-dev.off()
-
-# Insieme multitemporale
-p224r63_1988  <- mattone( " p224r63_1988_masked.grd " )
+# importiamo in R il file corrispondente all'immagine del 1988
+p224r63_1988 <- brick("p224r63_1988_masked.grd")
+# richiamiamo l'oggeto della funzione per vedere le informazioni del file
 p224r63_1988
 
-# Bande Landsat
-# B1: blu
-# B2: verde
-# B3: rosso
-# B4: infrarosso vicino
-# B5: infrarosso medio
-# B6: infrarosso termico
-# B7: infrarosso medio
+# funzione plot: VISUALIZZIAMO l'intera immagine satellitare con le sue singole bande (esattamente le stesse dell'immagine del 2011) e con la scala di colori di default
+plot(p224r63_1988)
 
-trama ( p224r63_1988 )
-plotRGB( p224r63_1988 , r = 3 , g = 2 , b = 1 , stretch = " Lin " )
-plotRGB( p224r63_1988 , r = 4 , g = 3 , b = 2 , stretch = " Lin " )
+# plotRGB 
+# vediamo l'immagine del 1988 a colori naturali (3,2,1: banda rossa sulla componente R, banda verde sulla componente G, banda blu sulla componente B)
+plotRGB(p224r63_1988,  r=3, g=2, b=1, stretch="Lin")
+# vediamo l'immagine del 1988 a colori falsi (4,3,2: banda infraorosso sulla componente R, banda rossa sulla componente G, banda verde sulla componente B)
+plotRGB(p224r63_1988,  r=4, g=3, b=2, stretch="Lin") 
+# vegetazione tutta colorata di rosso, rispetto al 2011 notiamo una componente antropica meno prevalente
 
-# Hist
-pdf( " multitemp.pdf " )
-par( mfrow = c( 2 , 2 ))
-plotRGB( p224r63_1988 , r = 4 , g = 3 , b = 2 , stretch = " Lin " )
-plotRGB( p224r63_2011 , r = 4 , g = 3 , b = 2 , tratto = " Lin " )
-plotRGB( p224r63_1988 , r = 4 , g = 3 , b = 2 , stretch = " hist " )
-plotRGB( p224r63_2011 , r = 4 , g = 3 , b = 2 , stretch = " hist " )
+# ESERCIZIO: creare un multiframe con par: schema con 2 righe e 1 colonna delle due immagini a confronto 
+par(mfrow=c(2,1)) 
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_1988,  r=4, g=3, b=2, stretch="Lin")
+
+# ESERCIZIO: mettiamo a confronto le due immagini (1988 - 2011) con la funzione plotRGB: vediamo le due immagini a colori falsi (4,3,2)
+# funzione par: creare un grafico con 2 righe e 2 colonne -> prima riga: stretch lin; seconda riga: histogram stretch 
+# GRAFICO -> LIN   1988 - 2011
+#            HIST  1988 - 2011
+par(mfrow=c(2,2)) 
+# Lin (prima riga)
+plotRGB(p224r63_1988,  r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+# hist (seconda riga) 
+plotRGB(p224r63_1988,  r=4, g=3, b=2, stretch="hist")
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="hist")
+# RISULTATO DEL CONFRONTO: 
+# immagine 1988: all'interno della foresta vediamo bene le zone di transizione: passaggio graduale dalla componente vegetale (foresta pluviale) alla componente umana (campi agricoli)
+# immagine 2011: vediamo una soglia netta e marcata tra la foresta pluviale e l’impatto umano
+# le immagini con l'histogram stretch (seconda riga) contengono molto rumore: non permette di visualizzare bene le variazioni reali 
+
+# PDF: salviamo il risultato del confronto delle due immagini nella cartella lab
+pdf("confronto_1988_2011_2x2")
+par(mfrow=c(2,2))
+plotRGB(p224r63_1988,  r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_1988,  r=4, g=3, b=2, stretch="hist")
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="hist")
 dev.off()
-
-plotRGB( p224r63_2011 , r = 3 , g = 4 , b = 2 , stretch = " Lin " )
-plotRGB( p224r63_2011 , r = 3 , g = 4 , b = 2 , stretch = " hist " )
-
-
-# par colori naturali, colori sbiaditi e falsi colori con estensione dell'istogramma
-par( mfrow = c( 3 , 1 ))
-plotRGB( p224r63_2011 , r = 3 , g = 2 , b = 1 , tratto = " Lin " )
-plotRGB( p224r63_2011 , r = 3 , g = 4 , b = 2 , stretch = " Lin " )
-plotRGB( p224r63_2011 , r = 3 , g = 4 , b = 2 , stretch = " hist " )
 
 # ------------------------------------------------
 
