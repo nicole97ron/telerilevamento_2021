@@ -101,3 +101,41 @@ plot(p224r63_2011res_pca$map)
 # PC1: spiega praticamente tutta la variabilità, dunque si vede bene la foresta, la parte agricola, i tagli dentro la foresta ecc
 # PC7: non si distingue più niente perchè spiega la minore variabilità del sistema
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+# scriviamo il nome dell'immagine_res_pca per vedere le informazioni che contiene
+p224r63_2011res_pca
+# $call -> ci dice qual è la funzione che abbiamo usato 
+# rasterPCA(img = p224r63_2011res)
+
+# $model -> ci da le informazioni sulle componenti principali e la variabilità che spiegano 
+# Call:
+# princomp(cor = spca, covmat = covMat[[1]])
+# Standard deviations:
+#       Comp.1       Comp.2       Comp.3       Comp.4       Comp.5       Comp.6       Comp.7 
+# 1.2050671158 0.0461548804 0.0151509526 0.0045752199 0.0018413569 0.0012333745 0.0007595368    
+# 7  variables and  44550 observations.
+
+# $map -> ci da le informazioni relative alla mappa 
+# class: RasterBrick 
+# dimensions: 150, 297, 44550, 7  (nrow, ncol, ncell, nlayers)
+# resolution: 300, 300  (x, y)
+# extent: 579765, 668865, -522735, -477735  (xmin, xmax, ymin, ymax)
+# crs: +proj=utm +zone=22 +datum=WGS84 +units=m +no_defs 
+# source: memory
+# names: PC1,         PC2,         PC3,         PC4,         PC5,         PC6,         PC7 
+# min values: -1.96808589, -0.30213565, -0.07212294, -0.02976086, -0.02695825, -0.01712903, -0.00744772 
+# max values: 6.065265723, 0.142898435, 0.114509984, 0.056825372, 0.008628344, 0.010537396, 0.005594299 
+
+# attr(,"class")
+# [1] "rasterPCA" "RStoolbox"
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# plottiamo in RGB le prime 3 componenti principali (PC1 - PC2 - PC3) 
+# l'immagine è p224r63_2011res_pca
+# plottiamo questa immagine insieme alla sua mappa: $map
+# montiamo la PC1 sulla componente red, la PC2 sulla componente green, la PC3 sulla componente blue
+# stretch lineare
+plotRGB(p224r63_2011res_pca$map, r=1, g=2, b=3, stretch="Lin")
+# i colori sono legati alle 3 componenti quindi a livello di colori non abbiamo modo di intuire nulla e non ci danno informazioni
+# questa è un'immagine risultante da una analisi delle componenti principali
