@@ -1,37 +1,58 @@
 # R_code_multivariate_analysis.r
- 
-# inseriamo le library necessarie
+# Analisi multivariata: PCA (dati Landsat, 30m)
+# usiamo una PCA per compattare il sistema in un numero inferiore di bande ma conservando la stessa proporzione
+
+# librerie e working directory
 library(raster)
 library(RStoolbox)
-# settiamo la working directory
-setwd("C:/lab/")
+setwd("C:/lab/") 
 
-# utilizziamo la funzione "brick" per caricare un set multiplo di dati (la funzione "raster" carica solo un set alla volta)
-p224r63_2011<-brick("p224r63_2011_masked.grd")
-p224r63_2011
-# in questo modo otteniamo le informazioni riguardanti l'immagine, è formata da 7 bande
+# bande di Landsat:
+# b1: blu
+# b2: verde
+# b3: rosso 
+# b4: NIR 
+
+# funzione brick: carichiamo l'immagine intera costiuita da 7 bande (RasterBrick) 
+p224r63_2011 <- brick("p224r63_2011_masked.grd")
+# plottiamo l'immagine per vedere le 7 bande
 plot(p224r63_2011)
-# plottiamo i valori della banda 1 contro quelli della banda 2
-plot(p224r63_2011$B1_sre, p224r63_2011$B2_sre, col="red", pch=19, cex=2)
-# pch= point caracter, 19 indica i punti, il colore dei punti sarà rosso, cex indica l'ingrandimento in questo caso x2
-# si ottiene un'immagine con punti molto vicini per cui le variabili sono fortemente correlate tra loro
+# vediamo le informazioni dell'immagine
+p224r63_2011
+# class: RasterBrick
+# dimensions: 1499, 2967, 4.447.533, 7  (nrow, ncol, ncell, nlayers)
+# resolution: 30, 30  (x, y)
+# extent: 579765, 668775, -522705, -477735  (xmin, xmax, ymin, ymax)
+# crs: +proj=utm +zone=22 +datum=WGS84 +units=m +no_defs 
+# source:    
+# names: B1_sre, B2_sre, B3_sre, B4_sre, B5_sre, B6_bt, B7_sre 
+# min values: 0.000000e+00, 0.000000e+00, 0.000000e+00, 1.196277e-02, 4.116526e-03, 2.951000e+02, 0.000000e+00 
+# max values:    0.1249041,    0.2563655,    0.2591587,    0.5592193,    0.4894984,  305.2000000,    0.3692634 
+
+# correliamo la banda del blu e la banda del verde: dobbiamo plottare la banda del blu contro la banda del verde
+# banda blu: B1_sre -> asse X
+# banda verde: B2_sre -> asse Y
+# $: leghiamo le bande all'immagine completa
+# col="red": colore del plot e in questo modo i punti sono rossi
+# pch=19: point character e in questo modo i punti sono dei cerchietti pieni
+# cex=2: aumentiamo la dimensione dei punti
+plot(p224r63_2011$B1_sre,p224r63_2011$B2_sre, col="red", pch=19, cex=2) 
+# Warning message: In .local(x, y, ...): plot used a sample of 2.2% of the cells. You can use "maxpixels" to increase the sample
+# i pixel da plottare sono oltre 4 milioni, dunque il sistema ci dice che plotta solo il 2.2% di questo totale
+# in statistica il sistema si chiama multicollinearità: le due bande sono molto correlate tra loro e sono correlate positivamente
+# le info del punto sulla X sono molto simili alle info del punto sulla Y
+# spesso questa forma di correlazione è usata in modo causale
+
+# plottiamo di nuovo la stessa immagine ma con B2_sre -> asse X e B1_sre -> asse Y 
+plot(p224r63_2011$B2_sre,p224r63_2011$B1_sre, col="red", pch=19, cex=2)
+
+# funzione pairs: serve per plottare tutte le correlazione possibili tra tutte le variabili di un dataset
+# mette in correlazione a due a due tutte le variabili di un certo dataset
 pairs(p224r63_2011)
-# la funzione pairs plotta tutte le correlazioni possibili tra tutte le variabili del dataset a due a due
-# si ottiene anche l'indice di correlazione di Pearson che varia tra 1 (positivo) e -1 (negativo, poca correlazione)
-
-# essendo la PCA un'analisi ingombrante, ricampioniamo il dato
-# utilizziamo la funzione "aggregate" per cui aggreghiamo i pixel con una risoluzione più bassa
-# per ogni banda ci sono più di 4 milioni di pixel con dimensioni 30mx30m
-p224r63_2011res <- aggregate(p224r63_2011, fact=10)
-# res= resampling= ricampionamento
-# fact indica il fattore di ricampionamento ovvero di quante volte si vogliono aumentare i pixel per irdurre la risoluzione
-p224r63_2011res
-# otteniamo un'immagine con pixel di 300mx300m
-
-# ora visualizziamo l'immagine ricampionata con la funzione plot
-par(mfrow=c(2,1))
-plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="lin")
-plotRGB(p224r63_2011res, r=4, g=3, b=2, stretch="lin")
+# sulla diagonale vediamo tutte le bande
+# parte sottostante alla diagonale: grafico che mostra la correlazione tra le bande 
+# parte sopra alla diagonale: indice di correlazione che varia tra -1 e 1
+# ----------------------------------------------------------------------------------------------------------------------
 
 # PCA= Principal Component Analysis, si usa per ridurre il set di variabili utilizzate
 p224r63_2011res_pca <- rasterPCA(p224r63_2011res)
