@@ -63,23 +63,69 @@ sunc <- unsuperClass(sun, nClasses=3)
 plot(sunc$map)
 # -----------------------------------------------------------------------------------------------------------------------------
 
-# Grand Canyon 
-# richiamiamo le library
-library(raster)
-library(RStoolbox)
-# settiamo la working directory
-setwd("C:/lab/")
-gc <- brick("dolansprings_oli_2013088_canyon_lrg.jpg")
-#visualizziamo l'immagine con la funzione plotRGB
-plotRGB(gc, r=1, g=2, b=3, stretch="lin")
-# modifichiamo lo stretch
-plotRGB(gc, r=1, g=2, b=3, stretch="hist")
-# ora procediamo con la classificazione dell'immagine tramite la funzione unsuperclass
-gcc2 <- unsuperClass(gc, nClasses=2)
-gcc2 
-# in questo modo otteniamo informazioni sulla mappa
-# ora visualizziamo l'immagine classificata in due classi
-plot(gcc2$map)
-# ora classifichiamo l'immagine con 4 classi
-gcc4 <- unsuperClass(gc, nClasses=4)
-plot(gcc4$map)
+#Grand Canyon
+# https://landsat.visibleearth.nasa.gov/view.php?id=80948
+
+# richiamare le librerie
+libreria ( raster )
+library( RStoolbox ) # indispensabile per la classificazione e l'analisi multivariata
+# impostare la directory di lavoro
+setwd( " C:/lab/ " )
+
+# carichiamo l'immagine che è un RGB: formato da 3 livelli
+# funzione brick: per IMPORTARE tutti e 3 i livelli e crea un oggetto raster brick
+# oggetto gc associato al risultato della funzione
+gc  <- brick( " dolansprings_oli_2013088_canyon_lrg.jpg " )
+
+# visualizza l'immagine RGB
+# funzione plotRGB: oggetto raster brick e con la funzione lo plottiamo
+# x: oggetto dell'immagine (gc)
+# rosso = 1 (banda 1 sul rosso); verde = 2 (banda 2 sul verde); blu = 3 (banda 3 sul blu)
+# tratto lineare: per aumentare la potenza visiva di tutti i colori possibili
+plotRGB( gc , r = 1 , g = 2 , b = 3 , stretch = " Lin " )
+
+# stiramento dell'istogramma
+plotRGB( gc , r = 1 , g = 2 , b = 3 , stretch = " hist " )
+
+# Grand Canyon classificato 2
+# n. classe = 2
+gcc2  <- unsuperClass( gc , nClasses = 2 )
+gcc2
+# *************** Mappa ******************
+# classe: RasterLayer
+# dimensioni: 6222, 9334, 58.076.148 (nrow, ncol, ncell)
+# risoluzione : 1, 1 (x, y)
+# estensione: 0, 9334, 0, 6222 (xmin, xmax, ymin, ymax)
+# crs: NA
+# fonte:
+# nomi: livello
+# valori: 1, 2 (minimo, massimo)
+
+# disegniamo la mappa di gcc2
+# $: legare la mappa all'immagine intera
+trama ( gcc2 $ mappa )
+# vediamo le due classi e possiamo fare un confronto con l'immagine originale
+# la più alta discriminazione è nella zona centrale
+# tipo di roccia e composizione mineralogica molto caratteristica
+
+# Grand Canyon classificato 4
+# n.classi = 4
+gcc4  <- unsuperClass( gc , nClasses = 4 )
+gcc4
+# *************** Mappa ******************
+# classe: RasterLayer
+# dimensioni: 6222, 9334, 58076148 (nrow, ncol, ncell)
+# risoluzione: 1, 1 (x, y)
+# estensione: 0, 9334, 0, 6222 (xmin, xmax, ymin, ymax)
+# crs: NA
+# fonte:
+# nomi: livello
+# valori: 1, 4 (minimo, massimo)
+
+# tracciamo la mappa di gcc4
+# $: legare la mappa all'immagine intera
+grafico ( gcc4 $ mappa )
+# vediamo una differenziazione più alta
+# rilevamento: si va a terra per vedere quanto l'immagine può essere utilizzabile, quanto le classi individuate sono veritiere a terra
+# abbiamo usato solo le bande red-green-blue, se avessimo usato anche la banda dell'infrarosso vicino, l'acqua sarebbe stata inserita in una classe a sè
+# ------------------------------------------------- -------------------------------------------------- -------------------------------------------------- -------
