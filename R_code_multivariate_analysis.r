@@ -54,16 +54,30 @@ pairs(p224r63_2011)
 # parte sopra alla diagonale: indice di correlazione che varia tra -1 e 1
 # ----------------------------------------------------------------------------------------------------------------------
 
-# PCA= Principal Component Analysis, si usa per ridurre il set di variabili utilizzate
+# la PCA è un’analisi piuttosto impattante
+# funzione aggregate: ricampioniamo il dato creando un dato più leggero 
+# riduciamo la dimensione dell’immagine diminuendone la risoluzione e aumentando la dimensione dei pixel, lo facciamo per tutte e 7 le bande
+# fattore 10 lineare: aggreghiamo i pixel del dato iniziale di 10 volte per ottenere un dato con una risoluzione più bassa
+# associamo l'oggetto p224r63_2011res (resampled) al risultato della funzione
+p224r63_2011res <- aggregate(p224r63_2011, fact=10)
+p224r63_2011res 
+# class: RasterBrick 
+# dimensions: 150, 297, 44550, 7  (nrow, ncol, ncell, nlayers)
+# resolution: 300, 300  (x, y)  -> la risoluzione iniziale è diminuita, ora è di 300 m (30x10)
+
+# per vedere la diminuzione della risoluzione nel nuovo dato facciamo un parmfrow
+# 2 righe e 1 colonna
+# plottiamo con plotRGB le due immagini a diversa risoluzione
+# banda NIR (4) sulla componente red, banda rossa (3) sulla componente green, banda verde (2) sulla componente blue
+par(mfrow=c(2,1))
+plotRGB(p224r63_2011, r=4, g=3, b=2, stretch="Lin")
+plotRGB(p224r63_2011res, r=4, g=3, b=2, stretch="Lin")
+# immagine sopra: immagine dettagliata con risoluzione 30mx30m di pixel
+# immagine sotto: immagine molto sgranata con risoluzione 300mx300m di pixel 
+
+# facciamo la PCA della nuova immagine a minor risoluzione (p224r63_2011res) 
+# funzione rasterPCA - Principal Component Analysis for Rasters: prende il pacchetto di dati e va a compattarli in un numero minore di bande
+# associamo l'oggetto p224r63_2011res_pca al risultato della funzione
 p224r63_2011res_pca <- rasterPCA(p224r63_2011res)
-# la funzione rasterPCA
-p224r63_2011res_pca
-# funzione summary è una funzione base che permette di ottenere un sommario del modello
-summary(p224r63_2011res_pca$model)
-# otteniamo che la prima componenete spiega più del 98% della variabilità
-# visualizziamo l'immagine con la funzione plot
-plot(p224r63_2011res_pca$map)
-#  notiamo che la prima immagine ovvero la prima componente è quella maggiormente rappresentativa
-plotRGB(p224r63_2011res_pca$map, r=1, g=2, b=3, stretch="lin")
-# in questo modo otteniamo un'immagine ottenuta dalla PCA in cui riduciamo la correlazione tra le variabili
+# ----------------------------------------------------------------------------------------------------------------------------------------------
 
