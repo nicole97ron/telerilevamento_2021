@@ -115,24 +115,46 @@ cld <- colorRampPalette(c('blue','white','red'))(100)
 plot(difndvi, col=cld)
 # difndvi: mappa dove in rosso abbiamo le aree con la maggiore perdita di vegetazione (differenza marcata tra i due ndvi)
 # ---------------------------------------------------------------------------------------------------------------------------------
-# NDVI
-# calcoliamo il NDVI per le due situazioni (defor1 e defor2)
-# il range del NDVI è sempre lo stesso indipendente dall’immagine -> -1 < NDVI < 1 
-# l'indice serve per paragonare immagini che hanno risoluzione radiometrica diversa in entrata
-# NDVI = (NIR - RED) / (NIR + RED) 
+# funzione spectralIndices
+# c’è anche un altro metodo per fare queste operazioni in modo rapido
+# library(RStoolbox) # for vegetation indices calculation
+# all'interno del pacchetto RStoolbox troviamo la funzione spectralIndices che calcola molti indici tra cui il DVI, l’NDVI, il SAVI (soil) ecc..
+# utilizziamo la funzione spectralIndices per l'immagine defor1 
+# primo argomento immagine: defor1 
+# secondo argomento bande: banda 3 (green)-> green=3, banda 2 (red)-> red=2, banda 1 (NIR)-> nir=1
+si <- spectralIndices(defor1, green = 3, red = 2, nir = 1)
+plot(si, col=cl)
+# risultato: calcola tutti gli indici (a parte quelli che hanno bisogno della banda del blu) e li mette tutti insieme
 
-# NDVI per l'immagine defor1
-# attenzione: alcuni software ragionano in modo sequenziale quindi mettere sempre le parentesi per i calcoli
-ndvi1 <- (defor1$defor1.1 - defor1$defor1.2) / (defor1$defor1.1 + defor1$defor1.2)
-plot(ndvi1, col=cl) 
-
-# NDVI per l'immagine defor 2
-ndvi2 <- (defor2$defor2.1 - defor2$defor2.2) / (defor2$defor2.1 + defor2$defor2.2)
-plot(ndvi2, col=cl) 
-
-# facciamo la differenza dei due ndvi (ndvi1-ndvi2) 
-difndvi <- ndvi1 - ndvi2
-cld <- colorRampPalette(c('blue','white','red'))(100) 
-plot(difndvi, col=cld)
-# difndvi: mappa dove in rosso abbiamo le aree con la maggiore perdita di vegetazione (differenza marcata tra i due ndvi)
+# facciamo lo spectralIndices anche per l'immagine defor2:
+si2 <- spectralIndices(defor2, green = 3, red = 2, nir = 1)
+plot(si2, col=cl)
 # ---------------------------------------------------------------------------------------------------------------------------------
+# worldwide NDVI
+# andiamo a vedere come varia l’indice NDVI all’interno del pianeta tramite la funzione levelplot
+# install.packages("rasterdiv")
+library(rasterdiv) # for the worldwide NDVI
+# all’interno del pacchetto troviamo un dataset gratuito chiamato copNDVI; l'input dataset è un indice NDVI ed è un Long-Term dataset
+
+# carichiamo il dataset con la funzione plot
+plot(copNDVI)
+# mappa del NDVI nel mondo che racchiude anche l’acqua: viene individuata da codici all’interno del set che vanno dal valore 253 fino al 255
+
+# l'acqua non ci interessa dunque dobbiamo eliminare i pixel di acqua
+# funzione reclassify: permette di cambiare i valori in altri valori 
+# i pixel 253-254-255 devono essere trasformati in non valori ovvero NA (not assigned) 
+# primo argomento: nome dell'immagine quindi copNDVI
+# secondo argomento: cbind(253:255, NA) -> significa che elimina i pixel 253-254-255 
+copNDVI <- reclassify(copNDVI, cbind(253:255, NA))
+plot(copNDVI)
+# mappa del NDVI a scala globale senza l'acqua
+# all'Equatore, nella parte del nord Europa e nord America l’NDVI è più alto 
+# nella fascia dei deserti l'NDVI è più basso
+
+# facciamo un levelplot per vedere i valori medi sulle righe e sulle colonne
+# la funzione levelplot si trova dentro il pacchetto rasterVis
+library(rasterVis) 
+levelplot(copNDVI)
+# vediamo come respira la terra dal 1999 al 2017
+# valori più alti: foresta dell’Amazzonia, foreste del centro Africa, foreste del Borneo, foresta continua del nord Europa-nord Asia-nord America
+# valori più bassi: deserti e grandi distese di neve
