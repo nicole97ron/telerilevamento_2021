@@ -1,104 +1,155 @@
-# R_code_land_cover.r
+# R_code_land_cover.r 
 
-# inseriamo le library da utilizzare
+# impostiamo le library e la working directory
+setwd("C:/lab/")
 library(raster)
-library(RStoolbox) # classification
-library(ggplot2)
-library(gridExtra)
+library(RStoolbox) # for classification 
+# install.packages("ggplot2")
+library(ggplot2) # for ggRGB
+# install.packages(gridExtra)
+library(gridExtra) # for grid.arrange
 
-# settiamo la working directory
-setwd("C:/lab/") 
+# utilizziamo le immagini defor1 e defor2, luogo: foresta amazzonica nel Rio Peixoto
+# BANDE -> NIR: banda 1; RED: banda 2; GREEN: banda 3
 
-# NR 1, RED 2, GREEN 3
-# questi sono i numeri associati alle bande
-
+# funzione brick: importiamo dentro R le immagini defor1 e defor2 che sono un pacchetto di dati
 defor1 <- brick("defor1.jpg")
-plotRGB(defor1, r=1, g=2, b=3, stretch="lin")
-# con la funzione "ggRGB" si ottiene un'immagine contenente le coordinate x e y, che non sono però riferite ad un reale sistema di riferimento
-ggRGB(defor1, r=1, g=2, b=3, stretch="lin")
+defor2 <- brick("defor2.jpg") 
 
-# facciamo la stessa operazione per la seconda immagine
-defor2 <- brick("defor2.jpg")
-plotRGB(defor2, r=1, g=2, b=3, stretch="lin")
-ggRGB(defor2, r=1, g=2, b=3, stretch="lin")
+# funzione plotRGB: banda 1 (NIR) sulla componente red, banda 2 (RED) sulla componente green, banda 3 (GREEN) sulla componente blue
+plotRGB(defor1, r=1, g=2, b=3, stretch="Lin")
+plotRGB(defor2, r=1, g=2, b=3, stretch="Lin")
+# sono entrambe delle immagini abbastanza grezze come informazioni 
 
-# possiamo visuliazzare le due immagini una accanto all'altra con la funzione par
+# funzione ggRGB: plottiamo le immagini raster con informazioni aggiuntive e con una grafica più accattivante rispetto a plotRGB
+# funzione ggRGB è contenuta nel pacchetto ggplot2
+# abbiamo 3 bande per ogni immagine e possiamo creare una immagine singola di queste 3 bande
+# argomenti della funzione: immagine da plottare, 3 componenti RGB, stretch 
+ggRGB(defor1, r=1, g=2, b=3, stretch="Lin") 
+ggRGB(defor2, r=1, g=2, b=3, stretch="Lin") 
+# ci sono delle coordinate dell'immagine: n. pixel sulla x e sulla y 
+
+# funzione parmfrow: mettiamo una accanto all’altra le due immagini defor1-defor2 plottate con la funzione plotRGB
 par(mfrow=c(1,2))
-plotRGB(defor1, r=1, g=2, b=3, stretch="lin")
-plotRGB(defor2, r=1, g=2, b=3, stretch="lin")
+plotRGB(defor1, r=1, g=2, b=3, stretch="Lin")
+plotRGB(defor2, r=1, g=2, b=3, stretch="Lin")
 
-# per visualizzare contemporaneamente le immagini ggRGb si utilizza la funzione "grid.arrange"
-# associamo ad ogni plot un nome
-p1 <- ggRGB(defor1, r=1, g=2, b=3, stretch="lin")
-p2 <- ggRGB(defor2, r=1, g=2, b=3, stretch="lin")
+# multiframe with ggplot2 and gridExtra 
+# la funzione parmfrow non funziona con immagini raster plottate con la funzione ggRGB
+# funzione grid.arrange: compone il multiframe come ci piace, va a mettere insieme vari pezzi di un grafico
+# p1: nome per il primo ggRGB
+# p2: nome per il secondo ggRGB
+p1 <- ggRGB(defor1, r=1, g=2, b=3, stretch="Lin") 
+p2 <- ggRGB(defor2, r=1, g=2, b=3, stretch="Lin")
+# argomenti della funzione grid.arrange: nome primo ggRGB, nome secondo ggRGB, nrow=2 (n. righe) 
 grid.arrange(p1, p2, nrow=2)
-# questa funzione unisce varie immagini all'interno di un grafico 
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# unsupervised classification
-# associamo un nome alla funzione unsuperclass riferita all'immagine defor1
+# Unsupervised classification 
+
+# funzione unsuperClass
+# argomenti: nome immagine, numero di classi 
+# 2 classi: foresta amazzonica - parte agricola+acqua
+# associamo l'oggetto d1c (defor1 classified) al risultato della funzione 
 d1c <- unsuperClass(defor1, nClasses=2)
-# si scelgono due classi, una riguarda la foresta e l'altra l'agricolo
-# ora visualizziamo la mappa tramite la funzione plot 
-plot(d1c$map)
-# classe 1 è associata alla parte agricola e la classe 2 è associata alla foresta (si potrebbe ottenere anche il risultato opposto)
 
-# creiamo la seconda mappa 
+# vediamo le informazioni
+d1c
+# *************** Map ******************
+# $map
+# class: RasterLayer 
+# dimensions: 478, 714, 341292  (nrow, ncol, ncell)
+# resolution: 1, 1  (x, y)
+# extent: 0, 714, 0, 478  (xmin, xmax, ymin, ymax)
+# crs: NA 
+# source: memory
+# names: layer 
+# values: 1, 2  (min, max) -> solo due valori perchè abbiamo fatto 2 classi 
+
+# facciamo il plot totale, sia di d1c che della sua mappa all'interno
+plot(d1c$map)
+# classe 1 = foresta amazzonica (in bianco);  classe 2 = parte agricola + fiume (in verde)
+
+# classifichiamo la seconda immagine (defor2) 
 d2c <- unsuperClass(defor2, nClasses=2)
 plot(d2c$map)
-# classe 1: agricolo, classe 2: foresta
+# classe 1 = foresta amazzonica (in bianco); classe 2 = parte agricola (in verde)
 
-# classifichiamo l'immagine defor 2 utilizzando 3 classi
+# proviamo a inserire 3 classi per l'immagine defor 2
+# la terza classe dovrebbe rappresentare il fiume (acqua) 
 d2c3 <- unsuperClass(defor2, nClasses=3)
-plot(d2c3$map)
-# otteniamo una mappa in cui la porzione agricola è stata ulteriormente suddivisa 
+plot(d2c3$map) 
+# classe 3 (in verde): parte residua di foresta amazzonica  
+# classe 1 - 2 (bianco - giallo): parte agricola divisa in 2 zone 
+# probabilmente ci sono due agricolture diverse all’interno della zona che hanno una riflettanza diversa
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# calcoliamo la porzione di foresta persa
+# frequencies d1c$map 
+# qual è la frequenza delle due classi? 
+# funzione freq: funzione generale che genera tavole di frequenza e va a calcolarla
+# argomento: d1c e la sua mappa
 freq(d1c$map)
-# la funzione "freq" permette di valutare la frequenza dei pixel di una data classe 
-#  value  count
-# [1,]     1  35281
-# [2,]     2 306011
-# somma
-s1 <- 35281 + 306011
-# calcoliamo la proporzione
-prop1 <- freq(d1c$map)/ s1
+#         value  count
+# [1,]     1    307047
+# [2,]     2    34245
+# 1: foresta amazzonica: 307047 -> n pixel
+# 2: parte agricola: 34245 -> n pixel 
+
+# calcoliamo la proporzione dei pixel per l'immagine d1c (consiste nella %)
+# facciamo la somma dei valori di pixel e la chiamiamo s1
+s1 <- 307047 + 34245
+s1
+# [1] 341292
+prop1 <- freq(d1c$map) / s1 
 prop1
-# value             count
-# [1,] 2.930042e-06 0.1033748, prop agriculture
-# [2,] 5.860085e-06 0.8966252, propr forest
+#            value        count
+# [1,] 2.930042e-06     0.8996607     -> foresta amazzonica
+# [2,] 5.860085e-06     0.1003393     -> parte agricola
+# consideriamo solo il count 
+# 89,96% di foresta amazzonica e il 10% di agricolo 
 
-# facciamo lo stesso per la seconda mappa
-s2 <- 342726
-prop2 <- freq(d2c$map) / s2
+# frequencies d2c$map
+freq(d2c$map)
+#         value  count
+# [1,]     1     178684 
+# [2,]     2     164042
+# 1: foresta amazzonica
+# 2: parte agricola
+
+s2 <- 178684 + 164042
+s2
+# [1] 342726
+prop2 <- freq(d2c$map)/ s2
 prop2
-#      value       count
-# [1,] 2.917783e-06 0.5213932, prop forest
-# [2,] 5.835565e-06 0.4786068, prop agriculture
+#      value          count
+# [1,] 2.917783e-06   0.5213611     -> foresta amazzonica
+# [2,] 5.835565e-06   0.4786389     -> parte agricola
+# 52% di foresta amazzonica e 47,86% di agricolo 
+# -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-# generiamo un dataframe
-cover <- c("Forest","Agriculture")
-# forest e agriculture sono le componenti di cover 
-# essendo la colonna cover composta da due componenti si deve inserire la c
-percent_1992 <- c(89.66, 10.34)
-percent_2006 <- c(52.14, 47.86)
-# la funzione "data.frame" permette di creare un dataframe in R
-percentages <- data.frame(cover, percent_1992, percent_2006)
-# associamo la funzione ad un nome
-percentages
+# let's plot them with ggplot 
+# creiamo un grafico per l'immagine del 1992 (defor1)
+# funzione ggplot argomenti:
+# -> (nome del dataframe, aes(prima colonna, seconda colonna, color=cover))
+# color: si riferisce a quali oggetti vogliamo discriminare/distinguere nel grafico e nel nostro caso vogliamo discriminare le due classi
+# +
+# geom_bar: tipo di geometria del grafico perchè dobbiamo fare delle barre
+# stat: indica il tipo di dati che utilizziamo e sono dati grezzi quindi si chiamano "identity" 
+# fill: colore delle barre all'interno e mettiamo "white" 
+# -> geom_bar(stat="identity", fill="white")
+p1 <- ggplot(percentage, aes(x=cover, y=percent_1992, color=cover)) + geom_bar(stat="identity", fill="white")
+p1
+# vediamo che sulla sinistra abbiamo la percentuale delle due classi nel 1992 e vediamo la parte agricola (molto bassa) e la foresta (molto alta)
 
-# creiamo un grafico
-# utilizziamo la funzione ggplot
-ggplot(percentages, aes(x=cover, y=percent_1992, color=cover)) + geom_bar(stat="identity", fill="white")
-# aes= aestetics, in questa parte della funzione si inseriscono le colonne e il colore (quali oggetti si vogliono discriminare nel grafico)
-# geom_bar, definisce la geometria, in questo caso sono delle barre
-# stat, definisce il tipo di dato, in questo caso sono dati grezzi quindi "identity"
-# fill, definisce il colore interno 
-# facciamo la stessa operazione per il plot del 2006
-ggplot(percentages, aes(x=cover, y=percent_2006, color=cover)) + geom_bar(stat="identity", fill="white")
+# facciamo il grafico per l'immagine del 2006 (defor2) 
+p2 <- ggplot(percentage, aes(x=cover, y=percent_2006, color=cover)) + geom_bar(stat="identity", fill="white")
+p2
+# vediamo che sulla sinistra abbiamo la percentuale delle due classi nel 2006 ma la parte agricola e la foresta ora sono molto simili 
 
-# creiamo un unico grafico
-# associamo i plot ad un nome
-p1 <- ggplot(percentages, aes(x=cover, y=percent_1992, color=cover)) + geom_bar(stat="identity", fill="white")
-p2 <- ggplot(percentages, aes(x=cover, y=percent_2006, color=cover)) + geom_bar(stat="identity", fill="white")
+# funzione grid.arrange: mette insieme dei vari plot di ggplot con le immagini
+# argomenti: p1, p2, numero di righe = 1 (nrow) 
 grid.arrange(p1, p2, nrow=1)
-                                                                              
+# nella prima data (1992) abbiamo la foresta che è molto elevata come valore, mentre l’agricoltura ha un valore basso
+# la situazione è molto diversa nel secondo grafico (2006) dove agricoltura e foresta hanno praticamente lo stesso valore
+# --------------------------------------------------------------------------------------------------------------------------------------------------
+                                                
