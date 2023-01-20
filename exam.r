@@ -125,7 +125,7 @@ ndvi1 <- (nir1 - red1) / (nir1 + red1)
 plot(ndvi1, col=clr, main="NDVI 1986")
 # legenda:
 #     rosso: NDVI alto, foresta borale sana e intatta
-#     giallo: NDVI basso, aree di deforestazione per l'agricoltura
+#     giallo: NDVI basso, aree di deforestazione 
 
 
 # Calcolo il NDVI per l'immagine del 2022:
@@ -133,7 +133,7 @@ ndvi2 <- (nir2 - red2) / (nir2 + red2)
 plot(ndvi2, col=clr, main="NDVI 2021") 
 # Legenda:
 #    rosso scuro: NDVI alto, foresta borale sana e intatta
-#    giallo: NDVI basso, aree di deforestazione per l'agricoltura, si nota un forte aumento di quest'area 
+#    giallo: NDVI basso, aree di deforestazione, si nota un forte aumento di quest'area 
 
 # metto le due immagini risultanti a confronto in un grafico con una riga e due colonne
 par(mfrow=c(1,2))
@@ -325,14 +325,14 @@ grid.arrange(a1, a2, nrow=1)
 # funzione set.seed: serve per fare una classificazione che sia sempre la stessa (usa sempre le stesse repliche per fare il modello) 
 set.seed(42)
 
-# Classificazione NON supervisionata per l'immagine del 1989 
-# 5 classi: però mi interessa solo: classe vegetazione - classe miniere - classe acqua
+# Classificazione NON supervisionata per l'immagine del 1986 
+# 5 classi: però mi interessa solo: classe vegetazione - classe iindustria - classe acqua
 p1c <- unsuperClass(At1986, nClasses=5)
 
 # controllo le informazioni
 
 # unsuperClass results
-
+p1c
 # *************** Map ******************
 # $map
 # class      : RasterLayer 
@@ -344,45 +344,48 @@ p1c <- unsuperClass(At1986, nClasses=5)
 # names      : layer 
 # values     : 1, 5  (min, max)
 
-
-# facciamo il plot totale, sia di d1c che della sua mappa all'interno
+# facciamo il plot totale, sia di p1c che della sua mappa all'interno
 plot(p1c$map)
-# Classe 1: veg
-# Classe 2: pascoli e aree coltivate
-# Classe 3: acqua
-# Classe 4: veg
-# Classe 5: veg
+# Classe 1: aree industrializzate
+# Classe 2: veg
+# Classe 3: aree industrializzate 
+# Classe 4: acqua
+# Classe 5: acqua
 
 # Frequencies p1c$map 
 # ci chiediamo quanta % di foresta è stata persa 
 # qual è la frequenza delle 5 classi  
 # funzione freq: funzione generale che genera tavole di frequenza e va a calcolarla
 freq(p1c$map)
-#      value  count
-#      value  count
+#       value  count
 # [1,]     1  43951
 # [2,]     2 653820
 # [3,]     3  97408
 # [4,]     4  16578
 # [5,]     5  22243
 
+
 # calcoliamo la proporzione dei pixel per l'immagine p1c (consiste nella %)
 # facciamo la somma dei valori di pixel e la chiamiamo s1
 s1 <- 43951 + 653820 + 97408 + 16578 + 22243
+s1
+# 834000
 prop1 <- freq(p1c$map) / s1 
 prop1
-#              value      count
-# [1,] 1.199041e-06 0.05269904
-# [2,] 2.398082e-06 0.78395683
-# [3,] 3.597122e-06 0.11679616
-# [4,] 4.796163e-06 0.01987770
-# [5,] 5.995204e-06 0.02667026
+#            value      count
+# [1,] 1.199041e-06 0.05269904 -> 5,2%
+# [2,] 2.398082e-06 0.78395683 -> 78,4%
+# [3,] 3.597122e-06 0.11679616 -> 11,7%
+# [4,] 4.796163e-06 0.01987770 -> 1,98%
+# [5,] 5.995204e-06 0.02667026 -> 2,67%
 
 
-# Classificazione NON supervisionata per l'immagine del 2022
+
+# Classificazione NON supervisionata per l'immagine del 2021
 # 5 classi:
 set.seed(42)
 p2c <- unsuperClass(At2021, nClasses=5)
+
 
 p2c
 # unsuperClass results
@@ -399,12 +402,13 @@ p2c
 # values     : 1, 5  (min, max)
 
 
+
 plot(p2c$map)
-# Classe 1:
-# Classe 2:        
-# Classe 3: 
-# Classe 4: 
-# Classe 5: 
+# Classe 1: aree industrializzate
+# Classe 2: vegetazione
+# Classe 3: aree industrializzate
+# Classe 4: acqua 
+# Classe 5: acqua 
 
 
 # Frequencies p2c$map 
@@ -415,19 +419,21 @@ freq(p2c$map)
 # [3,]     3 189459
 # [4,]     4 128146
 # [5,]     5 181689
-
   
 # facciamo la somma dei valori di pixel e la chiamiamo s2
 s2 <- 211494 + 122212 + 189459 + 128146 + 181689
+s2
+# 833000
 prop2 <- freq(p2c$map) / s2
 prop2 
 
 #             value     count
-# [1,] 1.200480e-06 0.2538944
-# [2,] 2.400960e-06 0.1467131
-# [3,] 3.601441e-06 0.2274418
-# [4,] 4.801921e-06 0.1538367
-# [5,] 6.002401e-06 0.2181140
+# [1,] 1.200480e-06 0.2538944 -> 25,4%
+# [2,] 2.400960e-06 0.1467131 -> 14,6%
+# [3,] 3.601441e-06 0.2274418 -> 22,8%
+# [4,] 4.801921e-06 0.1538367 -> 15,4%
+# [5,] 6.002401e-06 0.2181140 -> 21,8%
+
 
 
 # Metto a confronto le due immagini classificate in un grafico con una riga e due colonne: 
@@ -439,25 +445,22 @@ plot(p2c$map)
 # creo una tabella con 3 colonne
 # prima colonna -> copertura: prateria coltivata - foresta boreale - miniere 
 # seconda colonna -> % di classi dell'immagine p1c ->  percent_1986
-# terza colonna -> % di classi dell'immagine p2c -> percent_2022
+# terza colonna -> % di classi dell'immagine p2c -> percent_2021
 
-copertura <- c("Vegetazione","Aree coltivate","Acqua")
-percent_1986 <- c(44, 51.9, 4.5) 
-percent_2021 <- c(41.5, 42.5, 15.9) 
+copertura <- c("Vegetazione","Aree industrializzate","Acqua")
+percent_1986 <- c(78.4, 16.9, 4.7) 
+percent_2021 <- c(22.8, 48.2, 37,2) 
 
 # creiamo il dataframe
 # funzione data.frame: crea una tabella
 # argomenti della funzione: sono le 3 colonne che ho appena creato
-percentage <- data.frame(copertura, percent_1989, percent_2014)
+percentage <- data.frame(copertura, percent_1986, percent_2021)
 percentage
-#   copertura    percent_1989    percent_2014
-# 1 Vegetazione         95.0         81.3
-# 2     Miniere          1.7         11.3
-# 3       Acqua          3.2          4.4
+
 
 
 # plotto il Dataframe con ggplot
-# p1c -> creo il grafico per l'immagine del 1989 (At1989)
+# p1c -> creo il grafico per l'immagine del 1986 (At1986)
 # library(ggplot2) 
 # funzione ggplot
 #         (nome del dataframe, aes(x=prima colonna, y=seconda colonna, color=copertura))
@@ -469,18 +472,18 @@ percentage
 # stat: indica il tipo di dati che utilizziamo e sono dati grezzi quindi si chiamano "identity" 
 # fill: colore delle barre all'interno e mettiamo "white" 
 
-p1 <- ggplot(percentage, aes(x=copertura, y=percent_1989, color=copertura))  +  geom_bar(stat="identity", fill="white") + ylim(0, 95)
+p1 <- ggplot(percentage, aes(x=copertura, y=percent_1986, color=copertura))  +  geom_bar(stat="identity", fill="white") + ylim(0, 95)
 p1
 
 
-# p2c -> creo il grafico per l'immagine del 2014 (At2014)  
+# p2c -> creo il grafico per l'immagine del 2021 (At2021)  
 # funzione ggplot 
-p2 <- ggplot(percentage, aes(x=copertura, y=percent_2014, color=copertura))  +  geom_bar(stat="identity", fill="white") + ylim(0, 95)
+p2 <- ggplot(percentage, aes(x=copertura, y=percent_2021, color=copertura))  +  geom_bar(stat="identity", fill="white") + ylim(0, 95)
 p2
 
 # funzione grid.arrange: mette insieme dei vari plot di ggplot con le immagini
 # library(gridExtra) for grid.arrange
 # argomenti: p1, p2, numero di righe = 1  
 grid.arrange(p1, p2, nrow=1)
-# Le miniere sono aumentate nel tempo come percentuale, mentre è diminuita la % di vegetazione
+
 
