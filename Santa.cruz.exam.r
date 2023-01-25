@@ -27,6 +27,17 @@ library( viridis )                # per la funzione scale_fill_viridis
 # Impostare la directory di lavoro - percorso Windows
 setwd("C:/esame_telerilevamento_2022/")
 
+# img 1986: Landsat 5
+# Banda:
+#        1: Swir - 2: Nir - 3: Rosso
+
+# img 2021: Landsat 8
+# Banda:
+#        1: Swir - 2: Nir - 3: Rosso
+
+# ------------------------------------------------- -------------------------------------------------- -------------------------------------------------- -
+
+
 # 1. INTRODUZIONE - Caricare le immagini - Visualizzare le immagini e le relative Informazioni associate
 
 # Funzione brick: serve per importare dentro a R l'intera immagine satellitare costituita da tutte le sue singole bande (intero set di bande)
@@ -58,11 +69,26 @@ At2021
 # min values :                      0,                      0,                      0,                      0 
 # max values :                    255,                    255,                    255,                    255
 
+# Le due immagini di riferimento hanno una diversa estensione, per cui utilizzo la funzione crop per omologarla
+crop(At1986, At2021)
+At1986 <- crop(At1986, At2021)
+At1986
+# class      : RasterBrick 
+# dimensions : 833, 1000, 833000, 4  (nrow, ncol, ncell, nlayers)
+# resolution : 1, 1  (x, y)
+# extent     : 0, 1000, 0, 833  (xmin, xmax, ymin, ymax)
+# crs        : NA 
+# source     : memory
+# names      : X19860702_Cruz.Intro.1, X19860702_Cruz.Intro.2, X19860702_Cruz.Intro.3, X19860702_Cruz.Intro.4 
+# min values :                      0,                      0,                      0,                    255 
+# max values :                    255,                    255,                    255,                    255 
+
+
 # La classe è un RasterBrick: sono 3 bande in formato raster
-# Ci sono 834.000 pixel per ogni banda
+# Ci sono 833.000 pixel per ogni banda
 # Le due immagini sono a 8 bit: 2^8 = 256 -> da 0 a 255 valori
 
-# Funzione plot: visualizzo le 3 bande di ciascuna immagine e (i relativi valori di riflettanza nella legenda:
+# Funzione plot: visualizzo le 3 bande di ciascuna immagine e i relativi valori di riflettanza nella legenda:
 plot(At1986)
 plot(At2021)
 # la legenda riporta i valori interi di riflettanza approssimati in una scala in bit da 0 a 255
@@ -78,8 +104,8 @@ plot(At2021)
 par( mfrow = c( 1 , 2 ))
 plotRGB( At1986 , r = 1 , g = 2 , b = 3 , stretch = " Lin " , main = " Santa Cruz nel 1986" )
 plotRGB( At2021 , r = 1 , g = 2 , b = 3 , stretch = " Lin " , main = " Santa Cruz nel 2021" )
-# Verde: foresta boreale e praterie coltivate -> la vegetazione riflette molto il Nir (g=2 -> alto valore di riflettanza)
-# Viola: 
+# Verde: vegetazione -> la vegetazione riflette molto il Nir (g=2 -> alto valore di riflettanza)
+# Bianco/viola: aree industrializzate 
 # Blu: fiume, stagni sterili
 
 # ------------------------------------------------- -------------------------------------------------- -------------------------------------------------- -
@@ -124,7 +150,7 @@ clr <- colorRampPalette(c('dark blue', 'yellow', 'red', 'black'))(100)
 ndvi1 <- (nir1 - red1) / (nir1 + red1)
 plot(ndvi1, col=clr, main="NDVI 1986")
 # legenda:
-#     rosso: NDVI alto, foresta borale sana e intatta
+#     rosso scuro : NDVI alto, foresta sana e intatta
 #     giallo: NDVI basso, aree di deforestazione 
 
 
@@ -132,7 +158,7 @@ plot(ndvi1, col=clr, main="NDVI 1986")
 ndvi2 <- (nir2 - red2) / (nir2 + red2)
 plot(ndvi2, col=clr, main="NDVI 2021") 
 # Legenda:
-#    rosso scuro: NDVI alto, foresta borale sana e intatta
+#    rosso scuro: NDVI alto, foresta sana e intatta
 #    giallo: NDVI basso, aree di deforestazione, si nota un forte aumento di quest'area 
 
 # metto le due immagini risultanti a confronto in un grafico con una riga e due colonne
@@ -175,10 +201,11 @@ a1pca <- rasterPCA(At1986)
 # funzione summary: fornisce un sommario del modello, voglio sapere quanta variabilità spiegano le varie PC
 summary(a1pca$model)
 # Importance of components:
-#                        Comp.1      Comp.2      Comp.3        Comp.4
-# Standard deviation     53.0975911 15.56760541 6.75401727      0
-# Proportion of Variance  0.9073263  0.07799333 0.01468041      0
-# Cumulative Proportion   0.9073263  0.98531959 1.00000000      1
+#                           Comp.1      Comp.2     Comp.3 Comp.4
+# Standard deviation     53.1126925 15.56856313 6.75440493      0
+# Proportion of Variance  0.9073638  0.07796181 0.01467435      0
+# Cumulative Proportion   0.9073638  0.98532565 1.00000000      1
+
 
 
 # La  prima componente principale (PC1) è quella che spiega il 90,7% dell’informazione originale
@@ -193,25 +220,24 @@ a1pca
 
 # Standard deviations:
 #   Comp.1    Comp.2    Comp.3    Comp.4 
-# 53.097591 15.567605  6.754017  0.000000 
+# 53.112693 15.568563  6.754405  0.000000 
 
-# 4  variables and  834000 observations.
+# 4  variables and  833000 observations.
 
 # $map
 # class      : RasterBrick 
-# dimensions : 834, 1000, 834000, 4  (nrow, ncol, ncell, nlayers)
+# dimensions : 833, 1000, 833000, 4  (nrow, ncol, ncell, nlayers)
 # resolution : 1, 1  (x, y)
-# extent     : 0, 1000, 0, 834  (xmin, xmax, ymin, ymax)
+# extent     : 0, 1000, 0, 833  (xmin, xmax, ymin, ymax)
 # crs        : NA 
 # source     : memory
 # names      :        PC1,        PC2,        PC3,        PC4 
-# min values :  -92.32447, -219.29356,  -67.44852,    0.00000 
-# max values :  348.66627,   97.75035,  113.28704,    0.00000 
+# min values :  -92.33894, -219.29617,  -67.40776,    0.00000 
+# max values :  348.65391,   97.79245,  113.31458,    0.00000 
 
 
 # attr(,"class")
 # [1] "rasterPCA" "RStoolbox"
-
 
 # calcolo la deviazione standard sulla PC1
 # lego l'immagine a1pca alla sua mapppa e alla PC1 per definire la prima componenete principale che chiamo pc1a1: 
@@ -236,8 +262,8 @@ pc1sd3a1 <- focal(pc1a1, w=matrix(1/9, nrow=3, ncol=3), fun=sd)
 a1 <- ggplot() + geom_raster(pc1sd3a1, mapping=aes(x=x, y=y, fill=layer)) + scale_fill_viridis(option="inferno") + ggtitle("Standard deviation of PC1 in 1986 by inferno color scale")
 a1
 # Legenda:
-#    giallo: aumento della sd al passaggio tra suolo e fiume  
-#    violetto: bassa sd che individua la città e le strade
+#    giallo: aumento della sd al passaggio tra suolo e acqua  
+#    viola: bassa sd che individua la città e le strade
 #    nero: bassa sd che indica una copertura omogenea di foresta 
 
 # PCA per l'immgine At2021
@@ -326,7 +352,7 @@ grid.arrange(a1, a2, nrow=1)
 set.seed(42)
 
 # Classificazione NON supervisionata per l'immagine del 1986 
-# 3 classi: però mi interessa solo: classe vegetazione - classe aree industrializzate - classe acqua
+# 3 classi: classe vegetazione - classe aree industrializzate - classe acqua
 p1c <- unsuperClass(At1986, nClasses=3)
 
 # controllo le informazioni
@@ -336,20 +362,20 @@ p1c
 # *************** Map ******************
 # $map
 # class      : RasterLayer 
-# dimensions : 834, 1000, 834000  (nrow, ncol, ncell)
+# dimensions : 833, 1000, 833000  (nrow, ncol, ncell)
 # resolution : 1, 1  (x, y)
-# extent     : 0, 1000, 0, 834  (xmin, xmax, ymin, ymax)
+# extent     : 0, 1000, 0, 833  (xmin, xmax, ymin, ymax)
 # crs        : NA 
 # source     : memory
 # names      : layer 
 # values     : 1, 3  (min, max)
 
+
 # facciamo il plot totale, sia di p1c che della sua mappa all'interno
 plot(p1c$map)
-# Classe 1: vegetazione
-# Classe 2: aree industrializzate
-# Classe 3: acqua
-
+# Classe 1: aree industrializzate 
+# Classe 2: acqua
+# Classe 3: vegetazione
 
 # Frequencies p1c$map 
 # ci chiediamo quanta % di foresta è stata persa 
@@ -357,22 +383,23 @@ plot(p1c$map)
 # funzione freq: funzione generale che genera tavole di frequenza e va a calcolarla
 freq(p1c$map)
 #       value  count
-# [1,]     1 716964 -> vegetazione
-# [2,]     2  19791 -> aree industrializzate
-# [3,]     3  97245 -> acqua 
+# [1,]     1  98346
+# [2,]     2  19972
+# [3,]     3 714682
 
 
 # calcoliamo la proporzione dei pixel per l'immagine p1c (consiste nella %)
 # facciamo la somma dei valori di pixel e la chiamiamo s1
-s1 <- 716964 + 19791 + 97245
+s1 <- 98346 + 19972 + 714682 
 s1
-# 834000
+# 833000
 prop1 <- freq(p1c$map) / s1 
 prop1
 #            value      count
-# [1,] 1.199041e-06 0.85966906 -> 85,9% vegetazione
-# [2,] 2.398082e-06 0.02373022 -> 2,4% aree industrializzate
-# [3,] 3.597122e-06 0.11660072 -> 11,7% acqua
+# [1,] 1.200480e-06 0.11806242 -> 11,8% aree industrializzate
+# [2,] 2.400960e-06 0.02397599 -> 2,4% acqua 
+# [3,] 3.601441e-06 0.85796158 -> 85,8% vegetazione
+
 
 
 # Classificazione NON supervisionata per l'immagine del 2021
@@ -404,23 +431,21 @@ plot(p2c$map)
 # Frequencies p2c$map 
 freq(p2c$map)
 #      value  count
-# [1,]     1 295400
-# [2,]     2 259486
-# [3,]     3 278114
-
+# [1,]     1 289074
+# [2,]     2 284784
+# [3,]     3 259142
   
 # facciamo la somma dei valori di pixel e la chiamiamo s2
-s2 <- 295400 + 259486 + 278114
+s2 <- 289074 + 284784 + 259142
 s2
 # 833000
 prop2 <- freq(p2c$map) / s2
 prop2 
 
 #           value     count
-# [1,] 1.200480e-06 0.3546218 -> 35,5% aree industrializzate
-# [2,] 2.400960e-06 0.3115078 -> 31,2% acqua
-# [3,] 3.601441e-06 0.3338703 -> 33,4% vegetazione
-
+# [1,] 1.200480e-06 0.3470276 -> 34,7% aree industrializzate
+# [2,] 2.400960e-06 0.3418776 -> 34,2% acqua
+# [3,] 3.601441e-06 0.3110948 -> 31,1% vegetazione
 
 
 # Metto a confronto le due immagini classificate in un grafico con una riga e due colonne: 
@@ -429,21 +454,20 @@ plot(p1c$map)
 plot(p2c$map)
 
 # DataFrame 
-# creo una tabella con 3 colonne
-# prima colonna -> copertura: vegetazione - aree industrializzate 
-# seconda colonna -> % di classi dell'immagine p1c ->  percent_1986
-# terza colonna -> % di classi dell'immagine p2c -> percent_2021
+# creo una tabella con 2 colonne
+# copertura: vegetazione - aree industrializzate 
+# prima colonna -> % di classi dell'immagine p1c ->  percent_1986
+# seconda colonna -> % di classi dell'immagine p2c -> percent_2021
 
 copertura <- c("Vegetazione","Aree industrializzate")
-percent_1986 <- c(85.9, 2.4) 
-percent_2021 <- c(33.4, 35.5) 
+percent_1986 <- c(85.8, 11.8 ) 
+percent_2021 <- c(31.1, 34.7) 
 
 # creiamo il dataframe
 # funzione data.frame: crea una tabella
 # argomenti della funzione: sono le 3 colonne che ho appena creato
 percentage <- data.frame(copertura, percent_1986, percent_2021)
 percentage
-
 
 
 # plotto il Dataframe con ggplot
