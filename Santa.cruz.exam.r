@@ -326,8 +326,8 @@ grid.arrange(a1, a2, nrow=1)
 set.seed(42)
 
 # Classificazione NON supervisionata per l'immagine del 1986 
-# 5 classi: però mi interessa solo: classe vegetazione - classe iindustria - classe acqua
-p1c <- unsuperClass(At1986, nClasses=5)
+# 3 classi: però mi interessa solo: classe vegetazione - classe aree industrializzate - classe acqua
+p1c <- unsuperClass(At1986, nClasses=3)
 
 # controllo le informazioni
 
@@ -342,50 +342,43 @@ p1c
 # crs        : NA 
 # source     : memory
 # names      : layer 
-# values     : 1, 5  (min, max)
+# values     : 1, 3  (min, max)
 
 # facciamo il plot totale, sia di p1c che della sua mappa all'interno
 plot(p1c$map)
-# Classe 1: aree industrializzate
-# Classe 2: veg
-# Classe 3: aree industrializzate 
-# Classe 4: acqua
-# Classe 5: acqua
+# Classe 1: vegetazione
+# Classe 2: aree industrializzate
+# Classe 3: acqua
+
 
 # Frequencies p1c$map 
 # ci chiediamo quanta % di foresta è stata persa 
-# qual è la frequenza delle 5 classi  
+# qual è la frequenza delle 3 classi  
 # funzione freq: funzione generale che genera tavole di frequenza e va a calcolarla
 freq(p1c$map)
 #       value  count
-# [1,]     1  43951
-# [2,]     2 653820
-# [3,]     3  97408
-# [4,]     4  16578
-# [5,]     5  22243
+# [1,]     1 716964 -> vegetazione
+# [2,]     2  19791 -> aree industrializzate
+# [3,]     3  97245 -> acqua 
 
 
 # calcoliamo la proporzione dei pixel per l'immagine p1c (consiste nella %)
 # facciamo la somma dei valori di pixel e la chiamiamo s1
-s1 <- 43951 + 653820 + 97408 + 16578 + 22243
+s1 <- 716964 + 19791 + 97245
 s1
 # 834000
 prop1 <- freq(p1c$map) / s1 
 prop1
 #            value      count
-# [1,] 1.199041e-06 0.05269904 -> 5,2%
-# [2,] 2.398082e-06 0.78395683 -> 78,4%
-# [3,] 3.597122e-06 0.11679616 -> 11,7%
-# [4,] 4.796163e-06 0.01987770 -> 1,98%
-# [5,] 5.995204e-06 0.02667026 -> 2,67%
-
+# [1,] 1.199041e-06 0.85966906 -> 85,9% vegetazione
+# [2,] 2.398082e-06 0.02373022 -> 2,4% aree industrializzate
+# [3,] 3.597122e-06 0.11660072 -> 11,7% acqua
 
 
 # Classificazione NON supervisionata per l'immagine del 2021
 # 5 classi:
 set.seed(42)
-p2c <- unsuperClass(At2021, nClasses=5)
-
+p2c <- unsuperClass(At2021, nClasses=3)
 
 p2c
 # unsuperClass results
@@ -399,40 +392,34 @@ p2c
 # crs        : NA 
 # source     : memory
 # names      : layer 
-# values     : 1, 5  (min, max)
+# values     : 1, 3 (min, max)
 
 
 
 plot(p2c$map)
 # Classe 1: aree industrializzate
-# Classe 2: vegetazione
-# Classe 3: aree industrializzate
-# Classe 4: acqua 
-# Classe 5: acqua 
-
+# Classe 2: acqua
+# Classe 3: vegetazione
 
 # Frequencies p2c$map 
 freq(p2c$map)
 #      value  count
-# [1,]     1 211494
-# [2,]     2 122212
-# [3,]     3 189459
-# [4,]     4 128146
-# [5,]     5 181689
+# [1,]     1 295400
+# [2,]     2 259486
+# [3,]     3 278114
+
   
 # facciamo la somma dei valori di pixel e la chiamiamo s2
-s2 <- 211494 + 122212 + 189459 + 128146 + 181689
+s2 <- 295400 + 259486 + 278114
 s2
 # 833000
 prop2 <- freq(p2c$map) / s2
 prop2 
 
-#             value     count
-# [1,] 1.200480e-06 0.2538944 -> 25,4%
-# [2,] 2.400960e-06 0.1467131 -> 14,6%
-# [3,] 3.601441e-06 0.2274418 -> 22,8%
-# [4,] 4.801921e-06 0.1538367 -> 15,4%
-# [5,] 6.002401e-06 0.2181140 -> 21,8%
+#           value     count
+# [1,] 1.200480e-06 0.3546218 -> 35,5% aree industrializzate
+# [2,] 2.400960e-06 0.3115078 -> 31,2% acqua
+# [3,] 3.601441e-06 0.3338703 -> 33,4% vegetazione
 
 
 
@@ -443,13 +430,13 @@ plot(p2c$map)
 
 # DataFrame 
 # creo una tabella con 3 colonne
-# prima colonna -> copertura: prateria coltivata - foresta boreale - miniere 
+# prima colonna -> copertura: vegetazione - aree industrializzate 
 # seconda colonna -> % di classi dell'immagine p1c ->  percent_1986
 # terza colonna -> % di classi dell'immagine p2c -> percent_2021
 
-copertura <- c("Vegetazione","Aree industrializzate","Acqua")
-percent_1986 <- c(78.4, 16.9, 4.7) 
-percent_2021 <- c(22.8, 48.2, 37,2) 
+copertura <- c("Vegetazione","Aree industrializzate")
+percent_1986 <- c(85.9, 2.4) 
+percent_2021 <- c(33.4, 35.5) 
 
 # creiamo il dataframe
 # funzione data.frame: crea una tabella
@@ -485,5 +472,4 @@ p2
 # library(gridExtra) for grid.arrange
 # argomenti: p1, p2, numero di righe = 1  
 grid.arrange(p1, p2, nrow=1)
-
 
