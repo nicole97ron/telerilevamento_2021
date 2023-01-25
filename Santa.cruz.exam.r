@@ -113,7 +113,7 @@ plotRGB( At2021 , r = 1 , g = 2 , b = 3 , stretch = " Lin " , main = " Santa Cru
 # 2. TIME SERIES ANALYSIS 
 # La Time Series Analysis è utile per confrontare due o più immagini nel corso degli anni e capire dove sono avvenuti i cambiamenti principali 
 
-# funzione list.files: creo una lista di file riconosciuta grazie al pattern "RondoniaIntro" che si ripete nel nome
+# funzione list.files: creo una lista di file riconosciuta grazie al pattern "Cruz-Intro" che si ripete nel nome
 lista <- list.files(pattern="Cruz-Intro")
 # funzione lapply: applica la funzione (in questo caso raster) a tutta la lista di file appena creata
 # funzione raster: importa singoli strati e crea un oggetto chiamato raster layer
@@ -129,6 +129,9 @@ cs <- colorRampPalette(c("dark blue","light blue","pink","red"))(100)
 # library(rasterVis) 
 # funzione levelplot: crea un grafico dove mette a confronto le due immagini in tempi diversi utilizzando un'unica legenda 
 levelplot(cruz, col.regions=cs, main="Deforestazione a Santa Cruz", names.attr=c("2021" , "1986"))
+# Error in .levelplot(df, nly, bb, isll, nms, rat, anyFactor, isFactor,  : 
+#  Length of names.attr should match number of layers.
+
 # Si nota in rosa e rosso l'aumento delle miniere a cielo aperto e la diminuzione della foresta boreale 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
