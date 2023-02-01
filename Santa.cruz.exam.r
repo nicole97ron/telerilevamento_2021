@@ -43,18 +43,18 @@ setwd("C:/esame_telerilevamento_2022/")
 # Funzione brick: serve per importare dentro a R l'intera immagine satellitare costituita da tutte le sue singole bande (intero set di bande)
 # ogni immagine è composta da 3 bande
 # la funzione crea un oggetto che si chiama Rasterbrick: serie di bande in formato raster in un'unica immagine satellitare
-At1986 <- brick( "19860702_Cruz-Intro.png" )
+At1989 <- brick( "19890811_Cruz-Intro.png" )
 At2021 <- brick( "20210819_Cruz-Intro.png" )
 
 # Controllo le informazioni dei due Rasterbrick:
-At 1986
-#class      : RasterBrick 
-# dimensions : 834, 1000, 834000, 4  (nrow, ncol, ncell, nlayers)
+At 1989
+# class      : RasterBrick 
+# dimensions : 833, 1000, 833000, 4  (nrow, ncol, ncell, nlayers)
 # resolution : 1, 1  (x, y)
-# extent     : 0, 1000, 0, 834  (xmin, xmax, ymin, ymax)
+# extent     : 0, 1000, 0, 833  (xmin, xmax, ymin, ymax)
 # crs        : NA 
-# source     : 19860702_Cruz-Intro.png 
-# names      : X19860702_Cruz.Intro.1, X19860702_Cruz.Intro.2, X19860702_Cruz.Intro.3, X19860702_Cruz.Intro.4 
+# source     : 19890811_Cruz-Intro.png 
+# names      : X19890811_Cruz.Intro.1, X19890811_Cruz.Intro.2, X19890811_Cruz.Intro.3, X19890811_Cruz.Intro.4 
 # min values :                      0,                      0,                      0,                      0 
 # max values :                    255,                    255,                    255,                    255 
 
@@ -69,27 +69,13 @@ At2021
 # min values :                      0,                      0,                      0,                      0 
 # max values :                    255,                    255,                    255,                    255
 
-# Le due immagini di riferimento hanno una diversa estensione, per cui utilizzo la funzione crop per omologarla
-crop(At1986, At2021)
-At1986 <- crop(At1986, At2021)
-At1986
-# class      : RasterBrick 
-# dimensions : 833, 1000, 833000, 4  (nrow, ncol, ncell, nlayers)
-# resolution : 1, 1  (x, y)
-# extent     : 0, 1000, 0, 833  (xmin, xmax, ymin, ymax)
-# crs        : NA 
-# source     : memory
-# names      : X19860702_Cruz.Intro.1, X19860702_Cruz.Intro.2, X19860702_Cruz.Intro.3, X19860702_Cruz.Intro.4 
-# min values :                      0,                      0,                      0,                    255 
-# max values :                    255,                    255,                    255,                    255 
-
 
 # La classe è un RasterBrick: sono 3 bande in formato raster
 # Ci sono 833.000 pixel per ogni banda
 # Le due immagini sono a 8 bit: 2^8 = 256 -> da 0 a 255 valori
 
 # Funzione plot: visualizzo le 3 bande di ciascuna immagine e i relativi valori di riflettanza nella legenda:
-plot(At1986)
+plot(At1989)
 plot(At2021)
 # la legenda riporta i valori interi di riflettanza approssimati in una scala in bit da 0 a 255
 
@@ -102,7 +88,7 @@ plot(At2021)
 #                   serve per mostrare tutte le gradazioni di colore ed evitare uno schiacciamento verso una sola parte del colore
 # Funzione par: metto le due immagini del 1989-2014 a confronto in un grafico con una riga e due colonne:
 par( mfrow = c( 1 , 2 ))
-plotRGB( At1986 , r = 1 , g = 2 , b = 3 , stretch = " Lin " , main = " Santa Cruz nel 1986" )
+plotRGB( At1989 , r = 1 , g = 2 , b = 3 , stretch = " Lin " , main = " Santa Cruz nel 1989" )
 plotRGB( At2021 , r = 1 , g = 2 , b = 3 , stretch = " Lin " , main = " Santa Cruz nel 2021" )
 # Verde: vegetazione -> la vegetazione riflette molto il Nir (g=2 -> alto valore di riflettanza)
 # Bianco/viola: aree industrializzate 
@@ -128,9 +114,7 @@ cs <- colorRampPalette(c("dark blue","light blue","pink","red"))(100)
 
 # library(rasterVis) 
 # funzione levelplot: crea un grafico dove mette a confronto le due immagini in tempi diversi utilizzando un'unica legenda 
-levelplot(cruz, col.regions=cs, main="Deforestazione a Santa Cruz", names.attr=c("2021" , "1986"))
-# Error in .levelplot(df, nly, bb, isll, nms, rat, anyFactor, isFactor,  : 
-#  Length of names.attr should match number of layers.
+levelplot(cruz, col.regions=cs, main="Deforestazione a Santa Cruz")
 
 # Si nota in rosa e rosso l'aumento delle miniere a cielo aperto e la diminuzione della foresta boreale 
 
@@ -142,8 +126,8 @@ levelplot(cruz, col.regions=cs, main="Deforestazione a Santa Cruz", names.attr=c
 # - 1 < NDVI < 1 
 
 # associo dei nomi immediati alle bande:
-nir1 <- At1986$X19860702_Cruz.Intro.2
-red1 <- At1986$X19860702_Cruz.Intro.3
+nir1 <- At1989$X19890811_Cruz.Intro.2
+red1 <- At1989$X19890811_Cruz.Intro.3
 nir2 <- At2021$X20210819_Cruz.Intro.2
 red2 <- At2021$X20210819_Cruz.Intro.3
 
@@ -151,13 +135,13 @@ clr <- colorRampPalette(c('dark blue', 'yellow', 'red', 'black'))(100)
 
 # Calcolo il NDVI per l'immagine del 1989:
 ndvi1 <- (nir1 - red1) / (nir1 + red1)
-plot(ndvi1, col=clr, main="NDVI 1986")
+plot(ndvi1, col=clr, main="NDVI 1989")
 # legenda:
 #     rosso scuro : NDVI alto, foresta sana e intatta
 #     giallo: NDVI basso, aree di deforestazione 
 
 
-# Calcolo il NDVI per l'immagine del 2022:
+# Calcolo il NDVI per l'immagine del 2021:
 ndvi2 <- (nir2 - red2) / (nir2 + red2)
 plot(ndvi2, col=clr, main="NDVI 2021") 
 # Legenda:
@@ -166,14 +150,14 @@ plot(ndvi2, col=clr, main="NDVI 2021")
 
 # metto le due immagini risultanti a confronto in un grafico con una riga e due colonne
 par(mfrow=c(1,2))
-plot(ndvi1, col=clr, main="NDVI 1986")
+plot(ndvi1, col=clr, main="NDVI 1989")
 plot(ndvi2, col=clr, main="NDVI 2021")
 
-# Cambiamento della vegetazione dal 1986 al 2021
+# Cambiamento della vegetazione dal 1989 al 2021
 # Differenza tra i due NDVI nei due tempi:
 cld <- colorRampPalette(c('dark blue', 'white', 'red'))(100)
 diffndvi <- ndvi1 - ndvi2
-levelplot(diffndvi, col.regions=cld, main="NDVI 1986 - NDVI 2021")
+levelplot(diffndvi, col.regions=cld, main="NDVI 1989 - NDVI 2021")
 # legenda:
 #       rosso: > diff -> aree con la maggior perdita di vegetazione per l'aumento delle zone a scopi agricoli
 #       bianco: < diff -> aree con foresta boreale sana e intatta
@@ -199,31 +183,30 @@ levelplot(diffndvi, col.regions=cld, main="NDVI 1986 - NDVI 2021")
 # PCA immagine At1986
 # library(RStoolbox)
 # funzione rasterPCA: fa l'analisi delle componeneti principali di un det di dati
-a1pca <- rasterPCA(At1986) 
+a1pca <- rasterPCA(At1989) 
 
 # funzione summary: fornisce un sommario del modello, voglio sapere quanta variabilità spiegano le varie PC
 summary(a1pca$model)
 # Importance of components:
-#                           Comp.1      Comp.2     Comp.3 Comp.4
-# Standard deviation     53.1126925 15.56856313 6.75440493      0
-# Proportion of Variance  0.9073638  0.07796181 0.01467435      0
-# Cumulative Proportion   0.9073638  0.98532565 1.00000000      1
+#                            Comp.1      Comp.2     Comp.3 Comp.4
+# Standard deviation     63.0442687 13.64672392 7.12421155      0
+# Proportion of Variance  0.9437294  0.04421942 0.01205119      0
+# Cumulative Proportion   0.9437294  0.98794881 1.00000000      1
 
 
-
-# La  prima componente principale (PC1) è quella che spiega il 90,7% dell’informazione originale
+# La  prima componente principale (PC1) è quella che spiega il 94,3% dell’informazione originale
 
 a1pca
 # $call
-# rasterPCA(img = At1986)
+# rasterPCA(img = At1989)
 
 # $model
 # Call:
 # princomp(cor = spca, covmat = covMat[[1]])
 
 # Standard deviations:
-#   Comp.1    Comp.2    Comp.3    Comp.4 
-# 53.112693 15.568563  6.754405  0.000000 
+#    Comp.1    Comp.2    Comp.3    Comp.4 
+# 63.044269 13.646724  7.124212  0.000000 
 
 # 4  variables and  833000 observations.
 
@@ -235,12 +218,13 @@ a1pca
 # crs        : NA 
 # source     : memory
 # names      :        PC1,        PC2,        PC3,        PC4 
-# min values :  -92.33894, -219.29617,  -67.40776,    0.00000 
-# max values :  348.65391,   97.79245,  113.31458,    0.00000 
+# min values : -100.22022, -203.56056,  -76.41799,    0.00000 
+# max values :   340.6138,   117.7007,   162.0119,     0.0000 
 
 
 # attr(,"class")
 # [1] "rasterPCA" "RStoolbox"
+
 
 # calcolo la deviazione standard sulla PC1
 # lego l'immagine a1pca alla sua mapppa e alla PC1 per definire la prima componenete principale che chiamo pc1a1: 
@@ -262,7 +246,7 @@ pc1sd3a1 <- focal(pc1a1, w=matrix(1/9, nrow=3, ncol=3), fun=sd)
 
 # plotto la sd della PC1 con ggplot: modo migliore perche individua ogni tipo di discontinuità ecologica e geografica:
 # legenda Inferno:
-a1 <- ggplot() + geom_raster(pc1sd3a1, mapping=aes(x=x, y=y, fill=layer)) + scale_fill_viridis(option="inferno") + ggtitle("Standard deviation of PC1 in 1986 by inferno color scale")
+a1 <- ggplot() + geom_raster(pc1sd3a1, mapping=aes(x=x, y=y, fill=layer)) + scale_fill_viridis(option="inferno") + ggtitle("Standard deviation of PC1 in 1989 by inferno color scale")
 a1
 # Legenda:
 #    giallo: aumento della sd al passaggio tra suolo e acqua  
@@ -354,9 +338,9 @@ grid.arrange(a1, a2, nrow=1)
 # funzione set.seed: serve per fare una classificazione che sia sempre la stessa (usa sempre le stesse repliche per fare il modello) 
 set.seed(42)
 
-# Classificazione NON supervisionata per l'immagine del 1986 
+# Classificazione NON supervisionata per l'immagine del 1989
 # 3 classi: classe vegetazione - classe aree industrializzate - classe acqua
-p1c <- unsuperClass(At1986, nClasses=3)
+p1c <- unsuperClass(At1989, nClasses=3)
 
 # controllo le informazioni
 
@@ -376,33 +360,32 @@ p1c
 
 # facciamo il plot totale, sia di p1c che della sua mappa all'interno
 plot(p1c$map)
-# Classe 1: aree industrializzate 
+# Classe 1: vegetazione
 # Classe 2: acqua
-# Classe 3: vegetazione
+# Classe 3: aree industrializzate
 
 # Frequencies p1c$map 
 # ci chiediamo quanta % di foresta è stata persa 
 # qual è la frequenza delle 3 classi  
 # funzione freq: funzione generale che genera tavole di frequenza e va a calcolarla
 freq(p1c$map)
-#       value  count
-# [1,]     1  98346
-# [2,]     2  19972
-# [3,]     3 714682
-
+#      value  count
+# [1,]     1 696499
+# [2,]     2  38391
+# [3,]     3  98110
+    
 
 # calcoliamo la proporzione dei pixel per l'immagine p1c (consiste nella %)
 # facciamo la somma dei valori di pixel e la chiamiamo s1
-s1 <- 98346 + 19972 + 714682 
+s1 <- 696499 + 38391 + 98110 
 s1
 # 833000
 prop1 <- freq(p1c$map) / s1 
 prop1
 #            value      count
-# [1,] 1.200480e-06 0.11806242 -> 11,8% aree industrializzate
-# [2,] 2.400960e-06 0.02397599 -> 2,4% acqua 
-# [3,] 3.601441e-06 0.85796158 -> 85,8% vegetazione
-
+# [1,] 1.200480e-06 0.83613325 -> 83,6% vegetazione
+# [2,] 2.400960e-06 0.04608764 -> 4,6% acqua
+# [3,] 3.601441e-06 0.11777911 -> 11,8% aree industrializzate 
 
 
 # Classificazione NON supervisionata per l'immagine del 2021
@@ -427,7 +410,7 @@ p2c
 
 
 plot(p2c$map)
-# Classe 1: aree industrializzate
+# Classe 1: aree industrializzate 
 # Classe 2: acqua
 # Classe 3: vegetazione
 
@@ -463,14 +446,17 @@ plot(p2c$map)
 # seconda colonna -> % di classi dell'immagine p2c -> percent_2021
 
 copertura <- c("Vegetazione","Aree industrializzate")
-percent_1986 <- c(85.8, 11.8 ) 
+percent_1989 <- c(83.6, 11.8 ) 
 percent_2021 <- c(31.1, 34.7) 
 
 # creiamo il dataframe
 # funzione data.frame: crea una tabella
 # argomenti della funzione: sono le 3 colonne che ho appena creato
-percentage <- data.frame(copertura, percent_1986, percent_2021)
+percentage <- data.frame(copertura, percent_1989, percent_2021)
 percentage
+#              copertura percent_1989 percent_2021
+# 1           Vegetazione         83.6         31.1
+# 2 Aree industrializzate         11.8         34.7
 
 
 # plotto il Dataframe con ggplot
@@ -486,7 +472,7 @@ percentage
 # stat: indica il tipo di dati che utilizziamo e sono dati grezzi quindi si chiamano "identity" 
 # fill: colore delle barre all'interno e mettiamo "white" 
 
-p1 <- ggplot(percentage, aes(x=copertura, y=percent_1986, color=copertura))  +  geom_bar(stat="identity", fill="white") + ylim(0, 95)
+p1 <- ggplot(percentage, aes(x=copertura, y=percent_1989, color=copertura))  +  geom_bar(stat="identity", fill="white") + ylim(0, 95)
 p1
 
 
@@ -498,5 +484,12 @@ p2
 # funzione grid.arrange: mette insieme dei vari plot di ggplot con le immagini
 # library(gridExtra) for grid.arrange
 # argomenti: p1, p2, numero di righe = 1  
+p2 <- ggplot(percentage, aes(x=copertura, y=percent_2021, color=copertura))  +  geom_bar(stat="identity", fill="white") + ylim(0, 95)
+p2
+
+# funzione grid.arrange: mette insieme dei vari plot di ggplot con le immagini
+# library(gridExtra) for grid.arrange
+# argomenti: p1, p2, numero di righe = 1  
 grid.arrange(p1, p2, nrow=1)
+# Le aree industriliazzate sono aumentate nel tempo come percentuale, mentre è diminuita la % di vegetazione
 
