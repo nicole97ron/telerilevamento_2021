@@ -4,7 +4,7 @@
 
 # La conversione della fitta foresta ammazzonica in terreni coltivati sta avendo effetti drammatici sull'ambiente. Nello stato di Santa Cruz, in Bolivia, si sta verificando una deforestazione particolarmente intensa e rapida
 # Luogo di studio: Santa Cruz, Bolivia
-# In questo progetto si vuole osservare la riduzione della vegetazione a causa della deforestazione dal 1986 al 2021
+# In questo progetto si vuole osservare la riduzione della vegetazione a causa della deforestazione dal 1989 al 2021
 
 # LIBRERIA
 # Imposto le librerie necessarie per le indagini
@@ -27,7 +27,7 @@ library( viridis )                # per la funzione scale_fill_viridis
 # Impostare la directory di lavoro - percorso Windows
 setwd("C:/esame_telerilevamento_2022/")
 
-# img 1986: Landsat 5
+# img 1989: Landsat 5
 # Banda:
 #        1: Swir - 2: Nir - 3: Rosso
 
@@ -87,19 +87,18 @@ plot(At2021)
 # Stretch lineare: prende i valori di riflettanza e li fa variare tra 0 e 1 (estremi) in maniera lineare
 #                   serve per mostrare tutte le gradazioni di colore ed evitare uno schiacciamento verso una sola parte del colore
 # Funzione par: metto le due immagini del 1989-2014 a confronto in un grafico con una riga e due colonne:
-par( mfrow = c( 1 , 2 ))
-plotRGB( At1989 , r = 1 , g = 2 , b = 3 , stretch = " Lin " , main = " Santa Cruz nel 1989" )
-plotRGB( At2021 , r = 1 , g = 2 , b = 3 , stretch = " Lin " , main = " Santa Cruz nel 2021" )
+par(mfrow= c(1,2))
+plotRGB( At1989,r=1,g=2,b=3,stretch="Lin",main="Santa Cruz nel 1989")
+plotRGB( At2021,r=1,g=2,b=3,stretch="Lin",main="Santa Cruz nel 2021")
 # Verde: vegetazione -> la vegetazione riflette molto il Nir (g=2 -> alto valore di riflettanza)
 # Bianco/viola: aree industrializzate 
-# Blu: fiume, stagni sterili
-
+# Blu: fiumi\laghi
 # ------------------------------------------------- -------------------------------------------------- -------------------------------------------------- -
 
 # 2. TIME SERIES ANALYSIS 
-# La Time Series Analysis è utile per confrontare due o più immagini nel corso degli anni e capire dove sono avvenuti i cambiamenti principali 
+# La Time Series Analysis è utile per confrontare due o più immagini nel corso degli anni e capire quando e dove sono avvenuti i cambiamenti principali 
 
-# funzione list.files: creo una lista di file riconosciuta grazie al pattern "Cruz-Intro" che si ripete nel nome
+# funzione list.files: creo una lista di file  grazie al pattern "Cruz-Intro" che si ripete nel nome di ogni immagine che ho scaricato 
 lista <- list.files(pattern="Cruz-Intro")
 # funzione lapply: applica la funzione (in questo caso raster) a tutta la lista di file appena creata
 # funzione raster: importa singoli strati e crea un oggetto chiamato raster layer
@@ -107,16 +106,15 @@ importa <- lapply(lista, raster)
 # funzione stack: raggruppa i file appena importati in un unico blocco di file 
 cruz <- stack(importa) 
 
-# funzione colorRampPalette: cambio la scala di colori di default proposta dal software con una gradazione di colori che possa marcare le differenze nei due periodi
-# ogni colore è un etichetta scritta tra "" e sono diversi caratteri di uno stesso argomento dunque vanno messi in un vettore c 
+# funzione colorRampPalette: cambio la scala di colori di default proposta dal software con una gradazione di colori che possa marcare le differenze nei vari periodi
+# ogni colore è un etichetta scritta tra "" e sono diversi caratteri di uno stesso argomento dunque vanno messi in un vettore che io chiamo cs 
 # (100): argomento che indica i livelli per ciascun colore
 cs <- colorRampPalette(c("dark blue","light blue","pink","red"))(100)
 
 # library(rasterVis) 
-# funzione levelplot: crea un grafico dove mette a confronto le due immagini in tempi diversi utilizzando un'unica legenda 
-levelplot(cruz, col.regions=cs, main="Deforestazione a Santa Cruz")
-
-# Si nota in rosa e rosso l'aumento delle miniere a cielo aperto e la diminuzione della foresta boreale 
+# funzione levelplot: crea un grafico dove mette a confronto le immagini sviluppate in tempi diversi utilizzando un'unica legenda 
+levelplot(cruz,col.regions=cs,main="Deforestazione a Santa Cruz")
+# Si nota in rosa e rosso l'aumento delle aree soggette ad urbanizzazione e la conseguete diminuzione della vegetazione
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -131,13 +129,14 @@ red1 <- At1989$X19890811_Cruz.Intro.3
 nir2 <- At2021$X20210819_Cruz.Intro.2
 red2 <- At2021$X20210819_Cruz.Intro.3
 
+# scelgo una gamma di colori
 clr <- colorRampPalette(c('dark blue', 'yellow', 'red', 'black'))(100)
 
-# Calcolo il NDVI per l'immagine del 1989:
+# Calcolo l' NDVI per l'immagine del 1989:
 ndvi1 <- (nir1 - red1) / (nir1 + red1)
-plot(ndvi1, col=clr, main="NDVI 1989")
+plot(ndvi1, col=clr, main="NDVI 1989") 
 # legenda:
-#     rosso scuro : NDVI alto, foresta sana e intatta
+#     rosso scuro : NDVI alto, vegetazione sana
 #     giallo: NDVI basso, aree di deforestazione 
 
 
@@ -145,13 +144,14 @@ plot(ndvi1, col=clr, main="NDVI 1989")
 ndvi2 <- (nir2 - red2) / (nir2 + red2)
 plot(ndvi2, col=clr, main="NDVI 2021") 
 # Legenda:
-#    rosso scuro: NDVI alto, foresta sana e intatta
-#    giallo: NDVI basso, aree di deforestazione, si nota un forte aumento di quest'area 
+#    rosso scuro: NDVI alto, vegetazione sana 
+#    giallo: NDVI basso, aree di deforestazione --> si nota un forte aumento di quest'area 
 
 # metto le due immagini risultanti a confronto in un grafico con una riga e due colonne
 par(mfrow=c(1,2))
 plot(ndvi1, col=clr, main="NDVI 1989")
 plot(ndvi2, col=clr, main="NDVI 2021")
+# si nota un forte aumento delle aree gialle a cui si associa uno sviluppo di aree industrializzate a sfavore della vegetazione
 
 # Cambiamento della vegetazione dal 1989 al 2021
 # Differenza tra i due NDVI nei due tempi:
@@ -159,8 +159,8 @@ cld <- colorRampPalette(c('dark blue', 'white', 'red'))(100)
 diffndvi <- ndvi1 - ndvi2
 levelplot(diffndvi, col.regions=cld, main="NDVI 1989 - NDVI 2021")
 # legenda:
-#       rosso: > diff -> aree con la maggior perdita di vegetazione per l'aumento delle zone a scopi agricoli
-#       bianco: < diff -> aree con foresta boreale sana e intatta
+#       rosso\rosa: > diff -> aree con la maggior perdita di vegetazione per l'aumento delle zone a scopi agricoli
+#       bianco: < diff -> aree con vegetazione rimasta sana e intatta, sono pochissime 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -168,19 +168,19 @@ levelplot(diffndvi, col.regions=cld, main="NDVI 1989 - NDVI 2021")
 
 # La variabilità spaziale è un indice di biodiversità, vado a controllare quanto è eterogenea questa area
 # > eterogeneità -> > biodiversità attesa 
-# MOVING WINDOW: analizzo la variabilità spaziale tramite una tecnica chiamata moving window, ovvero sull'img originale si fa scorrere una moving window di nxn pixel 
+# MOVING WINDOW: analizzo la variabilità spaziale tramite una tecnica chiamata moving window, ovvero sull'immagine originale si fa scorrere una moving window di nxn pixel 
 #                e calcola un'operazione (da noi richiesta) per poi riportare il risultato sul pixel centrale 
 #                poi la finestra mobile si muove nuovamente di un pixel verso destra e riesegue l'operazione per riportare il risultato sul nuovo pixel centrale
 #                in questo modo si crea una nuova mappa finale i cui pixel periferici NON contengono valori, i pixel centrali hanno il risultato da noi calcolato 
 
 
-# DEVIAZIONE STANDARD: calcolo la ds perchè è correlata con la variabilità siccome racchiude il 68% di tutte le osservazioni
+# DEVIAZIONE STANDARD: calcolo la ds perchè è correlata con la variabilità 
 # per calcolarla ci serve solo una banda, dunque bisogna compattare tutte le informazioni relative alle diverse bande in un unico strato
 
 # ANALISI DELLE COMPONENTI PRINCIPALI
 # faccio l'analisi multivariata per ottenere la PC1 e su questa calcolo la deviazione standard
 
-# PCA immagine At1986
+# PCA immagine At1989
 # library(RStoolbox)
 # funzione rasterPCA: fa l'analisi delle componeneti principali di un det di dati
 a1pca <- rasterPCA(At1989) 
@@ -311,7 +311,6 @@ pc1sd3a2 <- focal(pc1a2, w=matrix(1/9, nrow=3, ncol=3), fun=sd)
 # legenda Inferno:
 a2 <- ggplot() + geom_raster(pc1sd3a2, mapping=aes(x=x, y=y, fill=layer)) + scale_fill_viridis(option="inferno") + ggtitle("Standard deviation of PC1 in 2021 by inferno color scale")
 a2
-
 # Legenda
 #     giallo: sd alta -> individua il passaggio da foresta a prateria 
 #     violetto: sd media -> individua strade e città urbanizzata 
@@ -320,7 +319,7 @@ a2
 
 grid.arrange(a1, a2, nrow=1) 
 # con le due immagini a confronto si nota la differenza nell'uso del suolo nei due periodi:
-# nel 2021:c'è un forte aumento della parte urbanizzata con conseguente riduzione della porzione di foresta naturale 
+# nel 2021:c'è un forte aumento della parte urbanizzata con conseguente riduzione della porzione di vegetazione
 
 # ----------------------- -----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -328,7 +327,6 @@ grid.arrange(a1, a2, nrow=1)
 
 
 # Unsupervised classification  -> processo che accorpa pixel con valori simili, una volta che questi pixel sono stati accorpati rappresentano una classe
-# Come si comportano i pixel nello spazio multispettrale definito dalle bande come assi
 # Il Software crea un Training Set: prende un certo n. di pixel come campione e misura le riflettanze nelle varie bande
 # Dopodichè classifica tutti gli altri pixel dell'immagine in funzione del training set (precedentemente creato) e forma le classi
 # Maximum Likelihood: si prende pixel per pixel e il software misura la distanza che ogni pixel ha (nello spazio multispettrale) dai pixel del training set 
@@ -339,7 +337,7 @@ grid.arrange(a1, a2, nrow=1)
 set.seed(42)
 
 # Classificazione NON supervisionata per l'immagine del 1989
-# 3 classi: classe vegetazione - classe aree industrializzate - classe acqua
+# 3 classi: classe Vegetazione - classe Aree industrializzate - classe Acqua
 p1c <- unsuperClass(At1989, nClasses=3)
 
 # controllo le informazioni
@@ -445,7 +443,7 @@ plot(p2c$map)
 # prima colonna -> % di classi dell'immagine p1c ->  percent_1986
 # seconda colonna -> % di classi dell'immagine p2c -> percent_2021
 
-copertura <- c("Vegetazione","Aree industrializzate")
+copertura <- c("Veg","Ind")
 percent_1989 <- c(83.6, 11.8 ) 
 percent_2021 <- c(31.1, 34.7) 
 
@@ -460,7 +458,7 @@ percentage
 
 
 # plotto il Dataframe con ggplot
-# p1c -> creo il grafico per l'immagine del 1986 (At1986)
+# p1c -> creo il grafico per l'immagine del 1989 (At1989)
 # library(ggplot2) 
 # funzione ggplot
 #         (nome del dataframe, aes(x=prima colonna, y=seconda colonna, color=copertura))
@@ -478,12 +476,6 @@ p1
 
 # p2c -> creo il grafico per l'immagine del 2021 (At2021)  
 # funzione ggplot 
-p2 <- ggplot(percentage, aes(x=copertura, y=percent_2021, color=copertura))  +  geom_bar(stat="identity", fill="white") + ylim(0, 95)
-p2
-
-# funzione grid.arrange: mette insieme dei vari plot di ggplot con le immagini
-# library(gridExtra) for grid.arrange
-# argomenti: p1, p2, numero di righe = 1  
 p2 <- ggplot(percentage, aes(x=copertura, y=percent_2021, color=copertura))  +  geom_bar(stat="identity", fill="white") + ylim(0, 95)
 p2
 
