@@ -435,8 +435,8 @@ prop2 <- freq(p2c$map) / s2
 prop2 
 #           value     count
 # [1,] 1.200480e-06 0.2140540 -> 21,4% Vegetazione
-# [2,] 2.400960e-06 0.2158523 -> 21,6% Acqua
-# [3,] 3.601441e-06 0.2665006 -> 26,7% Agricoltura\Industria
+# [2,] 2.400960e-06 0.2158523 -> 21,6% Agricoltura\Industria
+# [3,] 3.601441e-06 0.2665006 -> 26,7% Acqua
 # [4,] 4.801921e-06 0.3035930 -> 30,4% Agricoltura\Industria
 
 # Metto a confronto le due immagini classificate in un grafico con una riga e due colonne: 
@@ -450,17 +450,19 @@ plot(p2c$map)
 
 copertura <- c("Vegetazione","Agricoltura","Acqua")
 percent_1989 <- c(86.5,9.4,4.0) 
-percent_2021 <- c(21.4,57.1,21.6) 
+percent_2021 <- c(21.4,52.0,26.7) 
 
 # creiamo il dataframe
 # funzione data.frame: crea una tabella
 # argomenti della funzione: sono le 3 colonne che ho appena creato
 percentage <- data.frame(copertura, percent_1989, percent_2021)
 percentage
-#    copertura percent_1989 percent_2021
+#      copertura percent_1989 percent_2021
 # 1 Vegetazione         86.5         21.4
-# 2 Agricoltura          9.4         57.1
-# 3       Acqua          4.0         21.6
+# 2 Agricoltura          9.4         52.0
+# 3       Acqua          4.0         26.7
+ 
+
 
 
 # plotto il Dataframe con ggplot
@@ -489,5 +491,6 @@ p2
 # library(gridExtra) for grid.arrange
 # argomenti: p1, p2, numero di righe = 1  
 grid.arrange(p1, p2, nrow=1)
+
 # Le aree industriliazzate sono aumentate nel tempo come percentuale, mentre è diminuita la % di vegetazione
 
