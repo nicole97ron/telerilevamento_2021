@@ -337,8 +337,8 @@ grid.arrange(a1, a2, nrow=1)
 set.seed(42)
 
 # Classificazione NON supervisionata per l'immagine del 1989
-# 3 classi: classe Vegetazione - classe Aree industrializzate - classe Acqua
-p1c <- unsuperClass(At1989, nClasses=3)
+# 3 classi: classe Vegetazione - classe Aree industrializzate - classe Acqua - classe Agricoltura
+p1c <- unsuperClass(At1989, nClasses=4)
 
 # controllo le informazioni
 
@@ -353,43 +353,48 @@ p1c
 # crs        : NA 
 # source     : memory
 # names      : layer 
-# values     : 1, 3  (min, max)
+# values     : 1, 4 (min, max)
 
 
 # facciamo il plot totale, sia di p1c che della sua mappa all'interno
 plot(p1c$map)
-# Classe 1: vegetazione
-# Classe 2: acqua
-# Classe 3: aree industrializzate
+# Classe 1: Industria 
+# Classe 2: Vegetazione
+# Classe 3: Agricoltura
+# Classe 4: Acqua
+
 
 # Frequencies p1c$map 
 # ci chiediamo quanta % di foresta è stata persa 
-# qual è la frequenza delle 3 classi  
+# qual è la frequenza delle 4 classi  
 # funzione freq: funzione generale che genera tavole di frequenza e va a calcolarla
 freq(p1c$map)
 #      value  count
-# [1,]     1 696499
-# [2,]     2  38391
-# [3,]     3  98110
+# [1,]     1 356881
+# [2,]     2 363816
+# [3,]     3  78594
+# [4,]     4  33709
+
     
 
 # calcoliamo la proporzione dei pixel per l'immagine p1c (consiste nella %)
 # facciamo la somma dei valori di pixel e la chiamiamo s1
-s1 <- 696499 + 38391 + 98110 
-s1
+> s1 <- 356881+363816+78594+33709
+> s1
 # 833000
 prop1 <- freq(p1c$map) / s1 
 prop1
 #            value      count
-# [1,] 1.200480e-06 0.83613325 -> 83,6% vegetazione
-# [2,] 2.400960e-06 0.04608764 -> 4,6% acqua
-# [3,] 3.601441e-06 0.11777911 -> 11,8% aree industrializzate 
+# [1,] 1.200480e-06 0.42842857 -> 42,8% Industria 
+# [2,] 2.400960e-06 0.43675390 -> 43,7% vegetazione
+# [3,] 3.601441e-06 0.09435054 -> 9,4% agricoltura 
+# [4,] 4.801921e-06 0.04046699 -> 4% acqua
 
 
 # Classificazione NON supervisionata per l'immagine del 2021
-# 5 classi:
+# 4 classi:
 set.seed(42)
-p2c <- unsuperClass(At2021, nClasses=3)
+p2c <- unsuperClass(At2021, nClasses=4)
 
 p2c
 # unsuperClass results
@@ -403,34 +408,36 @@ p2c
 # crs        : NA 
 # source     : memory
 # names      : layer 
-# values     : 1, 3 (min, max)
+# values     : 1, 4 (min, max)
 
 
 
 plot(p2c$map)
-# Classe 1: aree industrializzate 
-# Classe 2: acqua
-# Classe 3: vegetazione
+# Classe 1: 
+# Classe 2: Vegetazione
+# Classe 3: Acqua
+# Classe 4: Agricoltura 
 
 # Frequencies p2c$map 
 freq(p2c$map)
 #      value  count
-# [1,]     1 289074
-# [2,]     2 284784
-# [3,]     3 259142
+# [1,]     1 178307
+# [2,]     2 179805
+# [3,]     3 221995 
+# [4,]     4 252893
+
   
 # facciamo la somma dei valori di pixel e la chiamiamo s2
-s2 <- 289074 + 284784 + 259142
-s2
+> s2 <- 178307+179805+221995+252893
+> s2
 # 833000
 prop2 <- freq(p2c$map) / s2
 prop2 
-
 #           value     count
-# [1,] 1.200480e-06 0.3470276 -> 34,7% aree industrializzate
-# [2,] 2.400960e-06 0.3418776 -> 34,2% acqua
-# [3,] 3.601441e-06 0.3110948 -> 31,1% vegetazione
-
+# [1,] 1.200480e-06 0.2140540 -> 21,4% Industria 
+# [2,] 2.400960e-06 0.2158523 -> 21,6% vegetazione
+# [3,] 3.601441e-06 0.2665006 -> 26,7% acqua 
+# [4,] 4.801921e-06 0.3035930 -> 30,4% agricoltura
 
 # Metto a confronto le due immagini classificate in un grafico con una riga e due colonne: 
 par(mfrow=c(1,2))
@@ -438,23 +445,19 @@ plot(p1c$map)
 plot(p2c$map)
 
 # DataFrame 
-# creo una tabella con 2 colonne
-# copertura: vegetazione - aree industrializzate 
-# prima colonna -> % di classi dell'immagine p1c ->  percent_1986
-# seconda colonna -> % di classi dell'immagine p2c -> percent_2021
+# creo una tabella con 3 colonne
+# copertura: vegetazione - aree industrializzate - agricoltura 
 
-copertura <- c("Veg","Ind")
-percent_1989 <- c(83.6, 11.8 ) 
-percent_2021 <- c(31.1, 34.7) 
+copertura <- c("Veg","Ind","Agr")
+percent_1989 <- c() 
+percent_2021 <- c() 
 
 # creiamo il dataframe
 # funzione data.frame: crea una tabella
 # argomenti della funzione: sono le 3 colonne che ho appena creato
 percentage <- data.frame(copertura, percent_1989, percent_2021)
 percentage
-#              copertura percent_1989 percent_2021
-# 1           Vegetazione         83.6         31.1
-# 2 Aree industrializzate         11.8         34.7
+
 
 
 # plotto il Dataframe con ggplot
