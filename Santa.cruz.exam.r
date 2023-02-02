@@ -337,7 +337,7 @@ grid.arrange(a1, a2, nrow=1)
 set.seed(42)
 
 # Classificazione NON supervisionata per l'immagine del 1989
-# 3 classi: classe Vegetazione - classe Aree industrializzate - classe Acqua - classe Agricoltura
+# 4 classi: però me ne interessano solo 3 --> classe Vegetazione - classe Agricoltura/Industria - classe Acqua 
 p1c <- unsuperClass(At1989, nClasses=4)
 
 # controllo le informazioni
@@ -358,9 +358,9 @@ p1c
 
 # facciamo il plot totale, sia di p1c che della sua mappa all'interno
 plot(p1c$map)
-# Classe 1: Industria 
+# Classe 1: vegetazione
 # Classe 2: Vegetazione
-# Classe 3: Agricoltura
+# Classe 3: Agricoltura\Industria
 # Classe 4: Acqua
 
 
@@ -385,9 +385,9 @@ freq(p1c$map)
 prop1 <- freq(p1c$map) / s1 
 prop1
 #            value      count
-# [1,] 1.200480e-06 0.42842857 -> 42,8% Industria 
+# [1,] 1.200480e-06 0.42842857 -> 42,8% Vegetazione
 # [2,] 2.400960e-06 0.43675390 -> 43,7% vegetazione
-# [3,] 3.601441e-06 0.09435054 -> 9,4% agricoltura 
+# [3,] 3.601441e-06 0.09435054 -> 9,4% agricoltura\Industria
 # [4,] 4.801921e-06 0.04046699 -> 4% acqua
 
 
@@ -413,10 +413,10 @@ p2c
 
 
 plot(p2c$map)
-# Classe 1: 
-# Classe 2: Vegetazione
-# Classe 3: Acqua
-# Classe 4: Agricoltura 
+# Classe 1: Vegetazione
+# Classe 2: Acqua
+# Classe 3: Agricoltura\Industria
+# Classe 4: Agricoltura\Industria
 
 # Frequencies p2c$map 
 freq(p2c$map)
@@ -434,10 +434,10 @@ freq(p2c$map)
 prop2 <- freq(p2c$map) / s2
 prop2 
 #           value     count
-# [1,] 1.200480e-06 0.2140540 -> 21,4% Industria 
-# [2,] 2.400960e-06 0.2158523 -> 21,6% vegetazione
-# [3,] 3.601441e-06 0.2665006 -> 26,7% acqua 
-# [4,] 4.801921e-06 0.3035930 -> 30,4% agricoltura
+# [1,] 1.200480e-06 0.2140540 -> 21,4% Vegetazione
+# [2,] 2.400960e-06 0.2158523 -> 21,6% Acqua
+# [3,] 3.601441e-06 0.2665006 -> 26,7% Agricoltura\Industria
+# [4,] 4.801921e-06 0.3035930 -> 30,4% Agricoltura\Industria
 
 # Metto a confronto le due immagini classificate in un grafico con una riga e due colonne: 
 par(mfrow=c(1,2))
@@ -448,16 +448,19 @@ plot(p2c$map)
 # creo una tabella con 3 colonne
 # copertura: vegetazione - aree industrializzate - agricoltura 
 
-copertura <- c("Veg","Ind","Agr")
-percent_1989 <- c() 
-percent_2021 <- c() 
+copertura <- c("Vegetazione","Agricoltura","Acqua")
+percent_1989 <- c(86.5,9.4,4.0) 
+percent_2021 <- c(21.4,57.1,21.6) 
 
 # creiamo il dataframe
 # funzione data.frame: crea una tabella
 # argomenti della funzione: sono le 3 colonne che ho appena creato
 percentage <- data.frame(copertura, percent_1989, percent_2021)
 percentage
-
+#    copertura percent_1989 percent_2021
+# 1 Vegetazione         86.5         21.4
+# 2 Agricoltura          9.4         57.1
+# 3       Acqua          4.0         21.6
 
 
 # plotto il Dataframe con ggplot
