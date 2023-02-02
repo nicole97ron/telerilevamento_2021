@@ -47,7 +47,7 @@ At1989 <- brick( "19890811_Cruz-Intro.png" )
 At2021 <- brick( "20210819_Cruz-Intro.png" )
 
 # Controllo le informazioni dei due Rasterbrick:
-At 1989
+At1989
 # class      : RasterBrick 
 # dimensions : 833, 1000, 833000, 4  (nrow, ncol, ncell, nlayers)
 # resolution : 1, 1  (x, y)
@@ -86,7 +86,7 @@ plot(At2021)
 #      -> r=1, g=2, b=3
 # Stretch lineare: prende i valori di riflettanza e li fa variare tra 0 e 1 (estremi) in maniera lineare
 #                   serve per mostrare tutte le gradazioni di colore ed evitare uno schiacciamento verso una sola parte del colore
-# Funzione par: metto le due immagini del 1989-2014 a confronto in un grafico con una riga e due colonne:
+# Funzione par: metto le due immagini del 1989-2021 a confronto in un grafico con una riga e due colonne:
 par(mfrow= c(1,2))
 plotRGB( At1989,r=1,g=2,b=3,stretch="Lin",main="Santa Cruz nel 1989")
 plotRGB( At2021,r=1,g=2,b=3,stretch="Lin",main="Santa Cruz nel 2021")
