@@ -155,7 +155,7 @@ plot(ndvi2, col=clr, main="NDVI 2021")
 
 # Cambiamento della vegetazione dal 1989 al 2021
 # Differenza tra i due NDVI nei due tempi:
-cld <- colorRampPalette(c('dark blue', 'white', 'red'))(100)
+cld <- colorRampPalette(c("brown", "white", "dark green"))(100)
 diffndvi <- ndvi1 - ndvi2
 levelplot(diffndvi, col.regions=cld, main="NDVI 1989 - NDVI 2021")
 # legenda:
