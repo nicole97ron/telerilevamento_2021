@@ -109,7 +109,7 @@ cruz <- stack(importa)
 # funzione colorRampPalette: cambio la scala di colori di default proposta dal software con una gradazione di colori che possa marcare le differenze nei vari periodi
 # ogni colore è un etichetta scritta tra "" e sono diversi caratteri di uno stesso argomento dunque vanno messi in un vettore che io chiamo cs 
 # (100): argomento che indica i livelli per ciascun colore
-cs <- colorRampPalette(c("dark blue","light blue","pink","red"))(100)
+cs <- colorRampPalette(c("dark red","red","yellow"))(100)
 
 # library(rasterVis) 
 # funzione levelplot: crea un grafico dove mette a confronto le immagini sviluppate in tempi diversi utilizzando un'unica legenda 
